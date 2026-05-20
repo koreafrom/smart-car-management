@@ -3,382 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarTax Pro Enterprise Suite - 전사 차량 관리 플랫폼</title>
+    <title>카텍스 프로 - 업무용 승용차 관리 솔루션</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --brand-primary: #0052ff;
-            --brand-secondary: #00c7ae;
-            --dark-main: #0f172a;
-            --gray-text: #475569;
-            --gray-light: #f8fafc;
-            --border-color: #e2e8f0;
-            --accent-red: #ef4444;
+            --primary: #0052ff;
+            --primary-hover: #0043d5;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #94a3b8;
+            --text-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --border: #e2e8f0;
+            --success: #16a34a;
         }
-        
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; letter-spacing: -0.02em; }
-        body { background-color: #f1f5f9; color: var(--dark-main); }
-        
-        /* Fixed Premium Header Bar */
+        body { background-color: #ffffff; color: var(--text-dark); }
+
+        /* Navigation Bar */
         nav {
-            position: fixed; top: 0; left: 0; right: 0; height: 65px;
-            background: #ffffff; border-bottom: 1px solid var(--border-color);
+            position: fixed; top: 0; left: 0; right: 0; height: 70px;
+            background: #ffffff; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 24px; z-index: 1000;
+            padding: 0 40px; z-index: 1000;
         }
-        .logo-area { font-size: 18px; font-weight: 900; color: var(--brand-primary); cursor: pointer; text-decoration: none; }
-        .nav-menu { display: flex; gap: 28px; list-style: none; }
-        .nav-menu a { text-decoration: none; color: #334155; font-weight: 500; font-size: 14px; cursor: pointer; }
-        .nav-menu a.active { color: var(--brand-primary); font-weight: 700; }
+        .logo { font-size: 22px; font-weight: 900; color: var(--primary); text-decoration: none; cursor: pointer; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { text-decoration: none; color: #334155; font-weight: 500; font-size: 15px; cursor: pointer; }
+        .nav-links a.active { color: var(--primary); font-weight: 700; }
+        .nav-actions { display: flex; gap: 12px; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: #334155; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.15); }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        /* Main Screen Sections */
+        .page-view { display: none; margin-top: 70px; }
+        .page-view.active { display: block; }
+
+        /* Landing Page Styling */
+        .hero { text-align: center; padding: 100px 24px 60px; max-width: 900px; margin: 0 auto; }
+        .hero h1 { font-size: 46px; font-weight: 900; line-height: 1.25; margin-bottom: 24px; color: #0f172a; }
+        .hero p { font-size: 18px; color: #475569; margin-bottom: 40px; }
         
-        .page-content { margin-top: 65px; }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
+        .toggle-section { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 40px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1100px; margin: 0 auto 100px; padding: 0 24px; }
+        .plan-card { border: 1px solid var(--border); border-radius: 16px; padding: 40px 24px; display: flex; flex-direction: column; justify-content: space-between; }
+        .plan-card.featured { border: 2px solid var(--primary); box-shadow: 0 10px 30px rgba(0,82,255,0.06); }
 
-        /* Full Scale Enterprise Dashboard CSS Grid Layout */
-        .workspace-grid-container {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: calc(100vh - 65px);
-            background: #ffffff;
-        }
-
-        /* Sidebar Control Panel */
-        .ws-sidebar {
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 24px 12px;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .sidebar-title {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #64748b;
-            padding-left: 12px;
-        }
-
-        .sidebar-menu-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        /* Live Console Dashboard Layout */
+        .console-container { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 70px); }
         
-        .menu-btn {
-            display: flex; align-items: center; gap: 10px;
-            padding: 12px 16px; font-size: 14px; font-weight: 500;
-            color: #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.2s;
-        }
-        .menu-btn:hover { background: rgba(255,255,255,0.05); color: #ffffff; }
-        .menu-btn.active { background: var(--brand-primary); color: #ffffff; font-weight: 600; }
+        /* Left Sidebar Custom Match with CarTax exactly */
+        .sidebar { background: #1e293b; color: #cbd5e1; padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-header-label { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; padding-left: 12px; margin-bottom: 6px; }
+        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; color: #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .menu-item:hover { background: rgba(255,255,255,0.06); color: #ffffff; }
+        .menu-item.active { background: var(--primary); color: #ffffff; }
 
-        /* Main Workspace Screen Content */
-        .ws-main-viewport {
-            background: #f8fafc;
-            padding: 32px;
-            overflow-y: auto;
-        }
+        /* Right Dashboard Area */
+        .main-viewport { background: #f8fafc; padding: 32px; overflow-y: auto; }
+        .content-pane { display: none; }
+        .content-pane.active { display: block; }
+        
+        .pane-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .pane-header h2 { font-size: 24px; font-weight: 800; }
 
-        .viewport-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
-            border-bottom: 1px solid var(--border-color); padding-bottom: 16px;
-        }
-        .viewport-title h2 { font-size: 22px; font-weight: 700; color: #0f172a; }
-        .viewport-title p { font-size: 13px; color: var(--gray-text); margin-top: 2px; }
-
-        /* Card Widgets */
+        /* Dynamic Functional Elements */
         .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .stat-card .lbl { font-size: 13px; color: var(--gray-text); margin-bottom: 6px; }
-        .stat-card .val { font-size: 24px; font-weight: 800; color: #0f172a; }
-        
-        /* Interactive Tab Headers Inside Sections (e.g. Vehicle Sub-Tabs) */
-        .subtab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 1px; }
-        .subtab-item { padding: 10px 16px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .subtab-item.active { color: var(--brand-primary); border-bottom: 2px solid var(--brand-primary); }
+        .stat-box { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .stat-box .title { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+        .stat-box .num { font-size: 24px; font-weight: 800; }
 
-        .subview-pane { display: none; }
-        .subview-pane.active { display: block; }
-
-        /* Premium Forms and Tables */
-        .table-container { background: white; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; margin-top: 16px; }
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .data-table th { background: #f1f5f9; padding: 12px 16px; font-size: 13px; font-weight: 600; color: #475569; }
-        .data-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        .subtabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
+        .subtab-btn { padding: 10px 16px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
+        .subtab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
         
+        .subpane { display: none; }
+        .subpane.active { display: block; }
+
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; text-align: left; }
+        .data-table th { background: #f1f5f9; padding: 14px 16px; font-size: 13px; font-weight: 600; color: #475569; }
+        .data-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+
         .badge { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; }
-        .badge-success { background: #dcfce7; color: #15803d; }
-        .badge-warning { background: #fef9c3; color: #a16207; }
-        .badge-info { background: #e0f2fe; color: #0369a1; }
+        .badge-ok { background: #dcfce7; color: #15803d; }
 
-        .btn { padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none; transition: all 0.2s; }
-        .btn-primary { background: var(--brand-primary); color: white; }
-        .btn-primary:hover { background: #0043d5; }
-        .btn-outline { background: white; border: 1px solid #cbd5e1; color: #334155; }
-
-        /* CSS Bar Charts / Graphics for Analysis Section */
-        .chart-box { background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 24px; margin-top: 16px; }
-        .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .bar-label { width: 100px; font-size: 13px; color: var(--gray-text); }
-        .bar-track { flex: 1; height: 16px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--brand-primary); border-radius: 8px; }
-
-        /* Switch toggle component for Settings */
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+        /* Modal window for Real Registrations */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-body { background: white; padding: 32px; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
     </style>
 </head>
 <body>
 
 <nav>
-    <a class="logo-area" onclick="location.reload()">🚗 CarTax Enterprise Suite</a>
-    <ul class="nav-menu">
-        <li><a class="active">🖥️ 실시간 전사 관제 데모 센터</a></li>
+    <a class="logo" onclick="showSection('landing')">🚗 CarTax Pro</a>
+    <ul class="nav-links">
+        <li><a id="nl-landing" class="active" onclick="showSection('landing')">서비스 소개 및 요금</a></li>
+        <li><a id="nl-console" onclick="showSection('console')">✨ 실제 기능 데모 콘솔</a></li>
     </ul>
+    <div class="nav-actions">
+        <button class="btn btn-outline" onclick="showSection('console')">로그인</button>
+        <button class="btn btn-primary" onclick="showSection('console')">무료 데모 체험</button>
+    </div>
 </nav>
 
-<div class="page-content">
-    <div class="workspace-grid-container">
-        
-        <!-- Left Sidebar Navigator -->
-        <div class="ws-sidebar">
-            <div>
-                <div class="sidebar-title">메인 자산 관리</div>
-                <ul class="sidebar-menu-list">
-                    <li class="menu-btn active" id="m-btn-car" onclick="switchMainTab('car')">🚘 1. 차량 인프라</li>
-                    <li class="menu-btn" id="m-btn-user" onclick="switchMainTab('user')">👤 2. 임직원/사용자</li>
-                    <li class="menu-btn" id="m-btn-branch" onclick="switchMainTab('branch')">🏢 3. 지점/부서 편제</li>
-                </ul>
-            </div>
-            
-            <div>
-                <div class="sidebar-title">실시간 통계 및 증빙</div>
-                <ul class="sidebar-menu-list">
-                    <li class="menu-btn" id="m-btn-drive" onclick="switchMainTab('drive')">📈 4. 운행 기록 관리</li>
-                    <li class="menu-btn" id="m-btn-expense" onclick="switchMainTab('expense')">💳 5. 지출/정산 비용</li>
-                    <li class="menu-btn" id="m-btn-analysis" onclick="switchMainTab('analysis')">📊 6. AI 운행 분석 레포트</li>
-                </ul>
-            </div>
+<!-- 1. LANDING PAGE VIEW -->
+<div id="view-landing" class="page-view active">
+    <div class="hero">
+        <h1>업무용 승용차 관리 솔루션의 기준<br><span style="color:var(--primary);">카텍스 프로</span></h1>
+        <p>월결제와 연간 결제의 유연성부터 전사 지점·운행·지출 통합 통계까지 완벽한 관리를 실현하세요.</p>
+        <button class="btn btn-primary" style="padding:14px 32px; font-size:16px;" onclick="showSection('console')">실제 데모 프로그램 작동해보기 🚀</button>
+    </div>
+    
+    <div class="pricing-grid">
+        <div class="plan-card">
+            <h3>베이직</h3>
+            <p style="margin:12px 0; font-size:28px; font-weight:800;">19,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
+            <button class="btn btn-outline" style="width:100%;" onclick="showSection('console')">선택하기</button>
+        </div>
+        <div class="plan-card featured">
+            <h3>스탠다드</h3>
+            <p style="margin:12px 0; font-size:28px; font-weight:800; color:var(--primary);">49,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
+            <button class="btn btn-primary" style="width:100%;" onclick="showSection('console')">선택하기</button>
+        </div>
+        <div class="plan-card">
+            <h3>엔터프라이즈</h3>
+            <p style="margin:12px 0; font-size:28px; font-weight:800;">99,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
+            <button class="btn btn-outline" style="width:100%;" onclick="showSection('console')">선택하기</button>
+        </div>
+    </div>
+</div>
 
+<!-- 2. LIVE CONSOLE VIEW (LANDING INCLUDED) -->
+<div id="view-console" class="page-view">
+    <div class="console-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
             <div>
-                <div class="sidebar-title">인프라 코어</div>
-                <ul class="sidebar-menu-list">
-                    <li class="menu-btn" id="m-btn-settings" onclick="switchMainTab('settings')">⚙️ 7. 시스템 설정 센터</li>
+                <div class="sidebar-header-label">메인 관리</div>
+                <ul class="menu-list">
+                    <li class="menu-item active" id="mi-car" onclick="routeConsole('car')">🚘 차량</li>
+                    <li class="menu-item" id="mi-user" onclick="routeConsole('user')">👤 사용자</li>
+                    <li class="menu-item" id="mi-branch" onclick="routeConsole('branch')">🏢 지점</li>
+                </ul>
+            </div>
+            <div>
+                <div class="sidebar-header-label">운행 및 정산</div>
+                <ul class="menu-list">
+                    <li class="menu-item" id="mi-drive" onclick="routeConsole('drive')">📈 운행</li>
+                    <li class="menu-item" id="mi-expense" onclick="shiftPane('expense')">💳 지출</li>
+                    <li class="menu-item" id="mi-analysis" onclick="shiftPane('analysis')">📊 분석</li>
+                </ul>
+            </div>
+            <div>
+                <div class="sidebar-header-label">설정</div>
+                <ul class="menu-list">
+                    <li class="menu-item" id="mi-settings" onclick="shiftPane('settings')">⚙️ 시스템 설정</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Right Workspace Viewport Frame -->
-        <div class="ws-main-viewport">
+        <!-- Main Viewport content sections -->
+        <div class="main-viewport">
             
-            <!-- SECTION 1: VEHICLE MANAGEMENT (SUBTABS INSIDE) -->
-            <div id="tab-sec-car" class="view-section active">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>🚘 차량 인프라 매니지먼트</h2>
-                        <p>사내 보유중인 법인 자산 차량의 스펙 관리, 예약 현황 및 관제를 종합 스위칭합니다.</p>
+            <!-- PANELS FOR VEHICLES -->
+            <div id="pane-car" class="content-pane active">
+                <div class="pane-header">
+                    <div>
+                        <h2>🚘 차량 관리 센터</h2>
+                        <p>사내 보유 차량 등록 및 현황 관제를 조작할 수 있습니다.</p>
                     </div>
-                    <button class="btn btn-primary">+ 새 법인 차량 자산 등록</button>
+                    <button class="btn btn-primary" onclick="openModal('car')">+ 실제 새 차량 추가하기</button>
                 </div>
                 
-                <!-- Subtabs -->
-                <div class="subtab-bar">
-                    <div class="subtab-item active" id="sb-item-list" onclick="switchSubTab('list')">차량 목록 현황</div>
-                    <div class="subtab-item" id="sb-item-manage" onclick="switchSubTab('manage')">차량 정비/상태관리</div>
-                    <div class="subtab-item" id="sb-item-reserve" onclick="switchSubTab('reserve')">실시간 차량 예약 현황</div>
+                <div class="subtabs">
+                    <div class="subtab-btn active" id="st-list" onclick="routeSub('list')">차량 목록</div>
+                    <div class="subtab-btn" id="st-manage" onclick="routeSub('manage')">차량 관리</div>
+                    <div class="subtab-btn" id="st-reserve" onclick="routeSub('reserve')">차량 예약</div>
                 </div>
 
-                <!-- Subtab 1-1: 차량 목록 -->
-                <div id="subview-list" class="subview-pane active">
-                    <div class="stats-row">
-                        <div class="stat-card"><div class="lbl">총 보유 차량</div><div class="val">14 대</div></div>
-                        <div class="stat-card"><div class="lbl">현재 운행중</div><div class="val" style="color:var(--brand-primary)">4 대</div></div>
-                        <div class="stat-card"><div class="lbl">정비 대상 분리</div><div class="val" style="color:var(--accent-red)">1 대</div></div>
-                        <div class="stat-card"><div class="lbl">금일 예약 건수</div><div class="val">9 건</div></div>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>차량번호</th><th>차량 모델명</th><th>구매/리스 구분</th><th>기본 차고지 지점</th><th>상태</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>123가 4567</td><td>제네시스 G80</td><td>법인 리스</td><td>본사 기획실</td><td><span class="badge badge-success">차고지 대기</span></td></tr>
-                                <tr><td>77무 8899</td><td>그랜저 하이브리드</td><td>법인 자가</td><td>강남 영업2지점</td><td><span class="badge badge-info">실시간 운행중</span></td></tr>
-                                <tr><td>91오 2345</td><td>카니발 리무진</td><td>법인 렌트</td><td>인천 물류센터</td><td><span class="badge badge-warning">예약 대기</span></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Subtab 1-2: 차량 정비/상태 관리 -->
-                <div id="subview-manage" class="subview-pane">
-                    <div class="chart-box">
-                        <h4 style="margin-bottom:12px;">🔧 주요 소모품 및 정비 주기 도래 현황</h4>
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>차량번호</th><th>엔진오일 잔여</th><th>타이어 상태</th><th>정기 종합검사일</th><th>액션</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>123가 4567</td><td>82% (안정)</td><td>양호</td><td>2026-11-15</td><td><button class="btn btn-outline">이력 관리</button></td></tr>
-                                <tr><td>77무 8899</td><td>14% (정비요망)</td><td>교체 주기 접근</td><td>2026-06-22</td><td><button class="btn btn-primary" style="background:var(--accent-red)">정비 입고 예약</button></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Subtab 1-3: 차량 예약 -->
-                <div id="subview-reserve" class="subview-pane">
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>예약 차량</th><th>신청자 (소속)</th><th>사용 예정 일시</th><th>목적지</th><th>승인 상태</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>제네시스 G80</td><td>이몽룡 과장 (영업부)</td><td>05-22 09:00 ~ 18:00</td><td>세종정부청사 미팅</td><td><span class="badge badge-success">승인 완료</span></td></tr>
-                                <tr><td>카니발 리무진</td><td>성춘향 팀장 (인사과)</td><td>05-23 13:00 ~ 17:00</td><td>워크샵 장소 사전답사</td><td><span class="badge badge-warning">결재 대기</span></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 2: USERS -->
-            <div id="tab-sec-user" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>👤 사내 임직원 및 차량 사용자 연동</h2>
-                        <p>모바일 차량 운행 기록 앱에 동기화되는 전사 직원 계정 인프라를 중앙 제어합니다.</p>
-                    </div>
-                    <button class="btn btn-primary">✉️ 카카오톡/이메일 초대 링크 발송</button>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>임직원 성명</th><th>사내 이메일 계정</th><th>소속 부서/지점</th><th>모바일 앱 연동 상태</th><th>최근 주행 일자</th></tr>
-                        </thead>
+                <div id="subpane-list" class="subpane active">
+                    <table class="data-table" id="car-table">
+                        <thead><tr><th>차량번호</th><th>모델명</th><th>구분</th><th>상태</th></tr></thead>
                         <tbody>
-                            <tr><td>홍길동 대표이사</td><td>ceo@company.com</td><td>기획조정실</td><td><span class="badge badge-success">연동 활성화</span></td><td>2026-05-20</td></tr>
-                            <tr><td>김철수 팀장</td><td>cs.kim@company.com</td><td>강남 영업부</td><td><span class="badge badge-success">연동 활성화</span></td><td>2026-05-19</td></tr>
-                            <tr><td>박영희 대리</td><td>yh.park@company.com</td><td>부산 마케팅본부</td><td><span class="badge badge-warning">초대 수락 대기</span></td><td>-</td></tr>
+                            <tr><td>123가 4567</td><td>제네시스 G80</td><td>법인리스</td><td><span class="badge badge-ok">대기중</span></td></tr>
+                            <tr><td>98무 1122</td><td>그랜저 HG</td><td>법인자가</td><td><span class="badge badge-ok">운행중</span></td></tr>
                         </tbody>
+                    </table>
+                </div>
+
+                <div id="subpane-manage" class="subpane">
+                    <table class="data-table">
+                        <thead><tr><th>차량번호</th><th>엔진오일</th><th>정비 필요 여부</th></tr></thead>
+                        <tbody><tr><td>123가 4567</td><td>정상 (80%)</td><td><span class="badge badge-ok">안전</span></td></tr></tbody>
+                    </table>
+                </div>
+
+                <div id="subpane-reserve" class="subpane">
+                    <table class="data-table">
+                        <thead><tr><th>예약 차량</th><th>예약자</th><th>기간</th></tr></thead>
+                        <tbody><tr><td>제네시스 G80</td><td>홍길동 대표</td><td>오전 09:00 ~ 12:00</td></tr></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- SECTION 3: BRANCHES -->
-            <div id="tab-sec-branch" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>🏢 전국 지점 및 소속 부서 편제 설정</h2>
-                        <p>지점별, 사업장별로 차량 자산 배정 및 업무용 비용 정산 계정도서를 분리 분할 관리합니다.</p>
-                    </div>
+            <!-- USER PANEL -->
+            <div id="pane-user" class="content-pane">
+                <div class="pane-header">
+                    <h2>👤 사용자 관리</h2>
+                    <button class="btn btn-primary" onclick="openModal('user')">+ 새 사용자 추가</button>
                 </div>
-                <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="stat-card"><h3>서울 본사</h3><p style="color:var(--gray-text); font-size:13px; margin-top:10px;">차량 8대 배정 / 인원 45명</p></div>
-                    <div class="stat-card"><h3>강남 영업지점</h3><p style="color:var(--gray-text); font-size:13px; margin-top:10px;">차량 4대 배정 / 인원 22명</p></div>
-                    <div class="stat-card"><h3>인천 물류센터</h3><p style="color:var(--gray-text); font-size:13px; margin-top:10px;">차량 2대 배정 / 인원 12명</p></div>
+                <table class="data-table" id="user-table">
+                    <thead><tr><th>이름</th><th>이메일</th><th>소속 부서</th></tr></thead>
+                    <tbody>
+                        <tr><td>홍길동</td><td>ceo@company.com</td><td>기획조정실</td></tr>
+                        <tr><td>김철수</td><td>cs@company.com</td><td>영업지점</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- BRANCH PANEL -->
+            <div id="pane-branch" class="content-pane">
+                <div class="pane-header">
+                    <h2>🏢 지점 관리</h2>
+                    <button class="btn btn-primary" onclick="openModal('branch')">+ 새 지점 추가</button>
+                </div>
+                <table class="data-table" id="branch-table">
+                    <thead><tr><th>지점명</th><th>배정 차량수</th><th>관할 인원</th></tr></thead>
+                    <tbody>
+                        <tr><td>서울 본사</td><td>8대</td><td>45명</td></tr>
+                        <tr><td>강남 영업지점</td><td>4대</td><td>22명</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DRIVE PANEL -->
+            <div id="pane-drive" class="content-pane">
+                <div class="pane-header">
+                    <h2>📈 운행 관리 로그</h2>
+                    <button class="btn btn-primary" onclick="openModal('drive')">+ 실제 운행 기록 입력</button>
+                </div>
+                <table class="data-table" id="drive-table">
+                    <thead><tr><th>일자</th><th>차량</th><th>운전자</th><th>목적지</th><th>거리</th></tr></thead>
+                    <tbody>
+                        <tr><td>2026-05-21</td><td>123가 4567</td><td>홍길동</td><td>세종시 정부청사</td><td>120km</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- EXPENSE PANEL -->
+            <div id="pane-expense" class="content-pane">
+                <div class="pane-header">
+                    <h2>💳 지출 증빙 관리</h2>
+                </div>
+                <table class="data-table">
+                    <thead><tr><th>결제일</th><th>지출항목</th><th>금액</th><th>증빙</th></tr></thead>
+                    <tbody><tr><td>2026-05-20</td><td>주유비</td><td>85,000원</td><td>법인카드</td></tr></tbody>
+                </table>
+            </div>
+
+            <!-- ANALYSIS PANEL -->
+            <div id="pane-analysis" class="content-pane">
+                <div class="pane-header">
+                    <h2>📊 AI 운행 데이터 분석</h2>
+                </div>
+                <div style="background:white; padding:24px; border-radius:12px; border:1px solid var(--border);">
+                    <p style="font-weight:700; margin-bottom:12px;">당월 전사 업무 주행 기여 비율</p>
+                    <div style="height:20px; background:#e2e8f0; border-radius:10px; overflow:hidden;">
+                        <div style="width:85%; height:100%; background:var(--primary);"></div>
+                    </div>
+                    <p style="margin-top:8px; font-size:13px; color:#64748b;">총 주행 거리 중 업무용 공제 비율 85% 달성 중</p>
                 </div>
             </div>
 
-            <!-- SECTION 4: DRIVE RECORDS -->
-            <div id="tab-sec-drive" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>📈 실시간 스마트 운행 기록 센터</h2>
-                        <p>소속 직원들이 스마트폰 앱으로 자동 측정한 실시간 GPS 스마트 로그 내역 및 국세청 증빙 결합 공간.</p>
-                    </div>
-                    <button class="btn btn-primary" style="background:#16a34a;">📥 국세청 고시 제29호 양식 세무 서식 다운로드</button>
+            <!-- SETTINGS PANEL -->
+            <div id="pane-settings" class="content-pane">
+                <div class="pane-header">
+                    <h2>⚙️ 시스템 설정 센터</h2>
                 </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>운행 일자</th><th>차량 번호</th><th>운전자</th><th>출발지 ➡️ 도착지</th><th>주행 거리</th><th>운행 목적 분류</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>2026-05-20</td><td>123가 4567</td><td>홍길동</td><td>서울 본사 ➡️ 세종시 상담처</td><td>124 km</td><td>일반 업무용 (공제대상)</td></tr>
-                            <tr><td>2026-05-19</td><td>77무 8899</td><td>김철수</td><td>강남 차고지 ➡️ 역삼동 거래처</td><td>12 km</td><td>고객 영업용 (공제대상)</td></tr>
-                            <tr><td>2026-05-19</td><td>123가 4567</td><td>홍길동</td><td>자택 ➡️ 서울 본사</td><td>24 km</td><td>출퇴근용 (공제대상)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- SECTION 5: EXPENSES -->
-            <div id="tab-sec-expense" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>💳 차량별 지출 증빙 및 영수증 결산</h2>
-                        <p>유류비, 하이패스 통행료, 주차비, 수리정비 비용 전산 매핑 로그 전산망.</p>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>결제 일시</th><th>차량 번호</th><th>지출 항목</th><th>결제 금액</th><th>증빙구분</th><th>매핑 운행이력</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>2026-05-20 14:22</td><td>123가 4567</td><td>주유소 (경유)</td><td>85,000원</td><td>법인카드</td><td>세종시 거래처 출장 건</td></tr>
-                            <tr><td>2026-05-20 11:05</td><td>77무 8899</td><td>한국도로공사 톨비</td><td>4,800원</td><td>하이패스 전자</td><td>역삼동 바이어 미팅 건</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- SECTION 6: ANALYSIS REPORT -->
-            <div id="tab-sec-analysis" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>📊 AI 운행 및 비용 종합 분석 리포트</h2>
-                        <p>차량 운행 데이터를 통계 분석하여 유휴 차량 분류 및 비업무용 주행 과세 리스크를 사전 스캔합니다.</p>
-                    </div>
-                </div>
-                
-                <div class="chart-box">
-                    <h3 style="font-size:16px; margin-bottom:16px;">🏢 당월 지점별 업무 주행 기여 비율 (%)</h3>
-                    <div class="bar-row">
-                        <div class="bar-label">서울 본사</div>
-                        <div class="bar-track"><div class="bar-fill" style="width: 88%;"></div></div>
-                        <strong style="font-size:13px; width:40px; text-align:right;">88%</strong>
-                    </div>
-                    <div class="bar-row">
-                        <div class="bar-label">강남 영업부</div>
-                        <div class="bar-track"><div class="bar-fill" style="width: 94%; background:var(--brand-secondary);"></div></div>
-                        <strong style="font-size:13px; width:40px; text-align:right;">94%</strong>
-                    </div>
-                    <div class="bar-row">
-                        <div class="bar-label">인천 물류센터</div>
-                        <div class="bar-track"><div class="bar-fill" style="width: 42%; background:var(--accent-red);"></div></div>
-                        <strong style="font-size:13px; width:40px; text-align:right;">42%</strong>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 7: SYSTEM SETTINGS -->
-            <div id="tab-sec-settings" class="view-section">
-                <div class="viewport-header">
-                    <div class="viewport-title">
-                        <h2>⚙️ 시스템 연동 및 전사 보안 설정</h2>
-                        <p>조직 전체에 적용될 법인 표준 운행 통제 옵션과 데이터 수집 게이트웨이를 토글합니다.</p>
-                    </div>
-                </div>
-                
-                <div class="chart-box" style="padding: 10px 24px;">
-                    <div class="setting-row">
-                        <div>
-                            <strong style="font-size:15px; display:block;">주말/공휴일 주행 시 자동 팝업 통제</strong>
-                            <span style="color:var(--gray-text); font-size:13px;">주말 주행 발생 시 모바일 앱에서 업무 목적 입력을 필수 강제 처리합니다.</span>
-                        </div>
-                        <input type="checkbox" checked style="width:20px; height:20px;">
-                    </div>
-                    <div class="setting-row">
-                        <div>
-                            <strong style="font-size:15px; display:block;">국세청 기준 금액 초과 리스크 사전 경고</strong>
-                            <span style="color:var(--gray-text); font-size:13px;">차량 1대당 연간 감가상각비/처분비 한도 초과 위험 시 경영지원실 이메일 즉시 알림</span>
-                        </div>
-                        <input type="checkbox" checked style="width:20px; height:20px;">
-                    </div>
+                <div style="background:white; padding:24px; border-radius:12px; border:1px solid var(--border);">
+                    <label style="display:flex; align-items:center; gap:12px; font-weight:600;">
+                        <input type="checkbox" checked style="width:20px; height:20px;"> 공휴일/주말 운행 기록 작성 시 목적지 자동 필수화 강제
+                    </label>
                 </div>
             </div>
 
@@ -386,25 +298,128 @@
     </div>
 </div>
 
+<!-- DYNAMIC REAL REGISTRATION MODAL WINDOW -->
+<div class="modal" id="reg-modal">
+    <div class="modal-body">
+        <h3 id="modal-title" style="margin-bottom:20px;">새 항목 추가</h3>
+        <div id="modal-form-content"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+            <button class="btn btn-outline" onclick="closeModal()">취소</button>
+            <button class="btn btn-primary" onclick="submitModalData()">실제 데이터 등록하기</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Tab Switching Logic for Sidebar Layout
-    function switchMainTab(targetSection) {
-        // Toggle Active class for buttons
-        document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('m-btn-' + targetSection).classList.add('active');
+    let currentModalType = '';
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
         
-        // Toggle Active class for content panels
-        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById('tab-sec-' + targetSection).classList.add('active');
+        document.getElementById('view-' + sectionId).classList.add('active');
+        const lnk = document.getElementById('nl-' + sectionId);
+        if(lnk) lnk.classList.add('active');
     }
 
-    // Sub-tab switching inside Vehicle Section
-    function switchSubTab(subId) {
-        document.querySelectorAll('.subtab-item').forEach(item => item.classList.remove('active'));
-        document.getElementById('sb-item-' + subId).classList.add('active');
+    function routeConsole(paneId) {
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById('mi-' + paneId).classList.add('active');
+
+        document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('pane-' + paneId).classList.add('active');
+    }
+
+    function shiftPane(pId) {
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById('mi-' + pId).classList.add('active');
+
+        document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('pane-' + pId).classList.add('active');
+    }
+
+    function routeSub(subId) {
+        document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('st-' + subId).classList.add('active');
+
+        document.querySelectorAll('.subpane').forEach(p => p.classList.remove('active'));
+        document.getElementById('subpane-' + subId).classList.add('active');
+    }
+
+    function openModal(type) {
+        currentModalType = type;
+        const container = document.getElementById('modal-form-content');
+        const title = document.getElementById('modal-title');
+        container.innerHTML = '';
         
-        document.querySelectorAll('.subview-pane').forEach(pane => pane.classList.remove('active'));
-        document.getElementById('subview-' + subId).classList.add('active');
+        if(type === 'car') {
+            title.innerText = '🚘 실제 법인 차량 추가 등록';
+            container.innerHTML = `
+                <div class="form-group"><label>차량 번호</label><input type="text" id="fc_no" placeholder="예: 332가 9988"></div>
+                <div class="form-group"><label>차량 모델명</label><input type="text" id="fc_model" placeholder="예: 카니발 하이브리드"></div>
+                <div class="form-group"><label>소유 구분</label><select id="fc_type"><option>법인리스</option><option>법인자산</option></select></div>
+            `;
+        } else if(type === 'user') {
+            title.innerText = '👤 실제 임직원 추가 등록';
+            container.innerHTML = `
+                <div class="form-group"><label>임직원 성명</label><input type="text" id="fu_name" placeholder="예: 이몽룡 과장"></div>
+                <div class="form-group"><label>이메일</label><input type="email" id="fu_email" placeholder="user@company.com"></div>
+                <div class="form-group"><label>소속 부서</label><input type="text" id="fu_dept" placeholder="영업부"></div>
+            `;
+        } else if(type === 'branch') {
+            title.innerText = '🏢 신규 지점/사업장 추가';
+            container.innerHTML = `
+                <div class="form-group"><label>지점명</label><input type="text" id="fb_name" placeholder="예: 부산 물류센터"></div>
+                <div class="form-group"><label>초기 배정 차량 수</label><input type="text" id="fb_cars" value="1대"></div>
+            `;
+        } else if(type === 'drive') {
+            title.innerText = '📈 실제 운행 이력 수동 등록';
+            container.innerHTML = `
+                <div class="form-group"><label>운행 일자</label><input type="date" id="fd_date" value="2026-05-21"></div>
+                <div class="form-group"><label>차량 선택</label><input type="text" id="fd_car" value="123가 4567"></div>
+                <div class="form-group"><label>목적지</label><input type="text" id="fd_dest" placeholder="예: 거래처 미팅"></div>
+                <div class="form-group"><label>주행 거리</label><input type="text" id="fd_dist" placeholder="35km"></div>
+            `;
+        }
+        document.getElementById('reg-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('reg-modal').style.display = 'none';
+    }
+
+    function submitModalData() {
+        if(currentModalType === 'car') {
+            const no = document.getElementById('fc_no').value || '미입력';
+            const model = document.getElementById('fc_model').value || '미입력';
+            const type = document.getElementById('fc_type').value;
+            const table = document.getElementById('car-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td>\${no}</td><td>\${model}</td><td>\${type}</td><td><span class="badge badge-ok">등록완료</span></td>`;
+        } else if(currentModalType === 'user') {
+            const name = document.getElementById('fu_name').value;
+            const email = document.getElementById('fu_email').value;
+            const dept = document.getElementById('fu_dept').value;
+            const table = document.getElementById('user-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td>\${name}</td><td>\${email}</td><td>\${dept}</td>`;
+        } else if(currentModalType === 'branch') {
+            const name = document.getElementById('fb_name').value;
+            const cars = document.getElementById('fb_cars').value;
+            const table = document.getElementById('branch-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td>\${name}</td><td>\${cars}</td><td>0명</td>`;
+        } else if(currentModalType === 'drive') {
+            const d = document.getElementById('fd_date').value;
+            const car = document.getElementById('fd_car').value;
+            const dest = document.getElementById('fd_dest').value;
+            const dist = document.getElementById('fd_dist').value;
+            const table = document.getElementById('drive-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td>\${d}</td><td>\${car}</td><td>테스트 유저</td><td>\${dest}</td><td>\${dist}</td>`;
+        }
+        closeModal();
+        alert('데이터가 성공적으로 가상 데이터베이스에 추가 연동되었습니다!');
     }
 </script>
 </body>
