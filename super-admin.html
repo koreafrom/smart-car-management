@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마스터 총관리자 시스템 관제 센터</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; margin:0; padding:20px; color: #e2e8f0; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 1px solid #334155; margin-bottom: 25px; }
+        table { width:100%; border-collapse: collapse; background: #1e293b; color: #e2e8f0; }
+        th, td { padding: 14px; border-bottom: 1px solid #334155; text-align: left; }
+        th { background: #0f172a; color: #94a3b8; }
+        .btn-approve { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-approve:hover { background: #059669; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2>🛠️ 카텍스 통합 플랫폼 최고 권한 총관리자 (Super Admin)</h2>
+        <a href="index.html" style="color:#94a3b8; text-decoration:none; font-weight:bold;">시스템 로그아웃</a>
+    </div>
+
+    <div class="card">
+        <h3>🏢 신규 가입 신청 회사 승인 및 권한 부여 관리</h3>
+        <p style="color:#94a3b8; font-size:14px; margin-bottom:20px;">가입 폼을 통해 신청된 기업의 사업자등록번호 진위 여부를 파악하고 승인 버튼을 누르면 해당 기업 관리자 계정이 활성화됩니다.</p>
+        <table>
+            <thead>
+                <tr><th>신청 일자</th><th>법인/회사명</th><th>사업자번호</th><th>신청자</th><th>이메일 계정</th><th>진행 상태</th><th>작업 제어</th></tr>
+            </thead>
+            <tbody id="appTableBody">
+                <tr><td colspan="7" style="text-align:center; color:#64748b;">대기열 데이터를 불러오는 중입니다...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="supabaseClient.js"></script>
+<script>
+    async function loadApplications() {
+        const { data, error } = await supabase.from('company_applications').select('*').order('created_at', { ascending: false });
+        if(error) return console.error(error);
+        
+        const tbody = document.getElementById('appTableBody');
+        if(!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b;">현재 신규 승인 대기 회사가 없습니다.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.map(app => `
+            <tr>
+                <td>${new Date(app.created_at).toLocaleDateString()}</td>
+                <td><strong>${app.company_name}</strong></td>
+                <td>${app.biz_number}</td>
+                <td>${app.admin_name}</td>
+                <td>${app.admin_email}</td>
+                <td><span style="color:${app.status==='승인 대기'?'#f59e0b':'#10b981'}; font-weight:bold;">${app.status}</span></td>
+                <td>
+                    ${app.status === '승인 대기' ? 
+                    `<button class="btn-approve" onclick="approveCompany('${app.id}')">즉시 승인 및 권한부여</button>` : 
+                    `<span style="color:#64748b;">완료됨</span>`}
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function approveCompany(id) {
+        if(!confirm('해당 기업의 가입 및 데이터베이스 테넌트 할당을 승인하시겠습니까?')) return;
+        
+        const { error } = await supabase
+            .from('company_applications')
+            .update({ status: '승인 완료' })
+            .eq('id', id);
+
+        if(error) {
+            alert('승인 처리 실패: ' + error.message);
+        } else {
+            alert('✅ 기업 관리자 승인이 완료되었으며, 인프라 권한이 양도되었습니다.');
+            loadApplications();
+        }
+    }
+
+    loadApplications();
+</script>
+</body>
+</html>
