@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>통합 마스터 관리자 대시보드</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .menu { background: #1e293b; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #f8fafc; }
+    </style>
+</head>
+<body>
+<div class="menu">
+    <h2>🏢 카텍스 B2B 총관리자 모드</h2>
+</div>
+<div class="card">
+    <h3>🏢 소속 기업 및 그룹 권한 제어</h3>
+    <table>
+        <thead><tr><th>기업 ID</th><th>회사명</th><th>등록 차량 수</th><th>총 주행거리</th><th>상태</th></tr></thead>
+        <tbody>
+            <tr><td>COMP-01</td><td>(주)가나다상사</td><td>14대</td><td>142,500 km</td><td><span style="color:green; font-weight:bold;">정상 서비스 중</span></td></tr>
+            <tr><td>COMP-02</td><td>마케팅팩토리</td><td>5대</td><td>32,100 km</td><td><span style="color:green; font-weight:bold;">정상 서비스 중</span></td></tr>
+        </tbody>
+    </table>
+</div>
+<div class="card">
+    <h3>🚗 실시간 전사 차량 운행 관제</h3>
+    <table>
+        <thead><tr><th>차량번호</th><th>현재 주행 위치</th><th>금일 주행거리</th><th>최종 업데이트</th></tr></thead>
+        <tbody id="adminTableBody"><tr><td colspan="4">DB 로딩 중...</td></tr></tbody>
+    </table>
+</div>
+<script src="supabaseClient.js"></script>
+<script>
+    async function loadAdminData() {
+        const { data } = await supabase.from('drive_logs').select('*').limit(10);
+        const tbody = document.getElementById('adminTableBody');
+        if(!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4'>운행 데이터가 없습니다.</td></tr>"; return; }
+        tbody.innerHTML = data.map(log => `
+            <tr>
+                <td><strong>${log.vehicle_number}</strong></td>
+                <td>서울 본사 (기본차고지)</td>
+                <td>${log.end_km - log.start_km} km</td>
+                <td>${log.drive_date}</td>
+            </tr>
+        `).join('');
+    }
+    loadAdminData();
+</script>
+</body>
+</html>
