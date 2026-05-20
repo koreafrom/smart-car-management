@@ -3,423 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카텍스 프로 - 업무용 승용차 관리 솔루션</title>
+    <title>CarTax Pro - 월간/연간 선택 요금제 및 기능 제어</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #0052ff;
-            --primary-hover: #0043d5;
-            --sidebar-bg: #1e293b;
-            --sidebar-text: #94a3b8;
-            --text-dark: #0f172a;
-            --bg-light: #f8fafc;
-            --border: #e2e8f0;
-            --success: #16a34a;
+            --brand-primary: #0052ff;
+            --brand-secondary: #00c7ae;
+            --dark-main: #111827;
+            --gray-text: #4b5563;
+            --gray-light: #f9fafb;
+            --border-color: #e5e7eb;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; letter-spacing: -0.02em; }
-        body { background-color: #ffffff; color: var(--text-dark); }
-
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; letter-spacing: -0.03em; }
+        body { background-color: #ffffff; color: var(--dark-main); overflow-x: hidden; }
+        
         /* Navigation Bar */
         nav {
             position: fixed; top: 0; left: 0; right: 0; height: 70px;
-            background: #ffffff; border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; z-index: 1000;
+            padding: 0 24px; border-bottom: 1px solid var(--border-color); z-index: 1000;
         }
-        .logo { font-size: 22px; font-weight: 900; color: var(--primary); text-decoration: none; cursor: pointer; }
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a { text-decoration: none; color: #334155; font-weight: 500; font-size: 15px; cursor: pointer; }
-        .nav-links a.active { color: var(--primary); font-weight: 700; }
-        .nav-actions { display: flex; gap: 12px; }
-
+        .logo-area { font-size: 20px; font-weight: 900; color: var(--brand-primary); text-decoration: none; cursor: pointer; }
+        .nav-menu { display: flex; gap: 32px; list-style: none; }
+        .nav-menu a { text-decoration: none; color: #374151; font-weight: 500; font-size: 15px; cursor: pointer; }
+        .nav-menu a.active { color: var(--brand-primary); font-weight: 700; }
+        .nav-auth { display: flex; align-items: center; gap: 12px; }
+        
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: #334155; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.15); }
-        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-text { background: transparent; color: var(--gray-text); }
+        .btn-fill { background: var(--brand-primary); color: white; box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2); }
+        .btn-fill:hover { background: #0043d5; }
+        .btn-dark { background: var(--dark-main); color: white; }
 
-        /* Main Screen Sections */
-        .page-view { display: none; margin-top: 70px; }
-        .page-view.active { display: block; }
+        .page-content { margin-top: 70px; }
+        .view-section { display: none; animation: fadeIn 0.3s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Landing Page Styling */
-        .hero { text-align: center; padding: 100px 24px 60px; max-width: 900px; margin: 0 auto; }
-        .hero h1 { font-size: 46px; font-weight: 900; line-height: 1.25; margin-bottom: 24px; color: #0f172a; }
-        .hero p { font-size: 18px; color: #475569; margin-bottom: 40px; }
+        /* Toggle Component Switch for Monthly / Annual */
+        .toggle-container {
+            display: flex; justify-content: center; align-items: center; gap: 16px; margin: 30px auto;
+        }
+        .toggle-label { font-size: 16px; font-weight: 600; color: var(--gray-text); }
+        .toggle-label.active { color: var(--brand-primary); }
+        .switch {
+            position: relative; display: inline-block; width: 60px; height: 34px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--brand-primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
         
-        .toggle-section { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 40px; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1100px; margin: 0 auto 100px; padding: 0 24px; }
-        .plan-card { border: 1px solid var(--border); border-radius: 16px; padding: 40px 24px; display: flex; flex-direction: column; justify-content: space-between; }
-        .plan-card.featured { border: 2px solid var(--primary); box-shadow: 0 10px 30px rgba(0,82,255,0.06); }
+        .discount-badge {
+            background: #ef4444; color: white; padding: 2px 8px; font-size: 12px; font-weight: 700; border-radius: 12px; margin-left: 4px;
+        }
 
-        /* Live Console Dashboard Layout */
-        .console-container { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 70px); }
+        /* Pricing Card Grid */
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto 60px; padding: 0 24px;
+        }
+        .price-card {
+            background: white; border: 1px solid var(--border-color); border-radius: 20px; padding: 40px 24px;
+            display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s;
+        }
+        .price-card.featured { border: 2px solid var(--brand-primary); box-shadow: 0 10px 25px rgba(0,82,255,0.08); }
+        .price-card h3 { font-size: 22px; margin-bottom: 8px; }
+        .price-card .price-num { font-size: 36px; font-weight: 800; margin: 15px 0; color: var(--dark-main); }
+        .perks-list { list-style: none; border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 30px; }
+        .perks-list li { font-size: 14px; margin-bottom: 10px; color: var(--gray-text); display: flex; align-items: center; gap: 6px; }
+        .perks-list li::before { content: "✓"; color: var(--brand-primary); font-weight: bold; }
+
+        /* Premium Form Layouts */
+        .form-box { max-width: 520px; margin: 40px auto 100px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .input-item { margin-bottom: 20px; }
+        .input-item label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .input-item input, .input-item select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
+        .input-item input:focus, .input-item select:focus { border-color: var(--brand-primary); }
+
+        /* Demo Workspace with Plan restrictions simulation */
+        .workspace-box { display: grid; grid-template-columns: 240px 1fr; background: white; max-width: 1200px; margin: 20px auto 80px; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+        .ws-sidebar { background: #0f172a; color: white; padding: 25px 16px; }
+        .ws-main { background: #f8fafc; padding: 30px; }
+        .plan-badge-indicator { background: var(--brand-primary); color: white; padding: 4px 10px; font-size: 12px; border-radius: 4px; font-weight: bold; }
         
-        /* Left Sidebar Custom Match with CarTax exactly */
-        .sidebar { background: #1e293b; color: #cbd5e1; padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
-        .sidebar-header-label { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; padding-left: 12px; margin-bottom: 6px; }
-        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
-        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; color: #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .menu-item:hover { background: rgba(255,255,255,0.06); color: #ffffff; }
-        .menu-item.active { background: var(--primary); color: #ffffff; }
-
-        /* Right Dashboard Area */
-        .main-viewport { background: #f8fafc; padding: 32px; overflow-y: auto; }
-        .content-pane { display: none; }
-        .content-pane.active { display: block; }
-        
-        .pane-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-        .pane-header h2 { font-size: 24px; font-weight: 800; }
-
-        /* Dynamic Functional Elements */
-        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .stat-box { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
-        .stat-box .title { font-size: 13px; color: #64748b; margin-bottom: 4px; }
-        .stat-box .num { font-size: 24px; font-weight: 800; }
-
-        .subtabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
-        .subtab-btn { padding: 10px 16px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
-        .subtab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-        
-        .subpane { display: none; }
-        .subpane.active { display: block; }
-
-        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; text-align: left; }
-        .data-table th { background: #f1f5f9; padding: 14px 16px; font-size: 13px; font-weight: 600; color: #475569; }
-        .data-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
-
-        .badge { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; }
-        .badge-ok { background: #dcfce7; color: #15803d; }
-
-        /* Modal window for Real Registrations */
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-body { background: white; padding: 32px; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .locked-feature { background: #f1f5f9; color: #94a3b8; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 8px; text-align: center; font-size: 13px; margin-top: 15px; position: relative; }
+        .locked-feature .lock-tag { background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; position: absolute; top: -10px; right: 10px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <a class="logo" onclick="showSection('landing')">🚗 CarTax Pro</a>
-    <ul class="nav-links">
-        <li><a id="nl-landing" class="active" onclick="showSection('landing')">서비스 소개 및 요금</a></li>
-        <li><a id="nl-console" onclick="showSection('console')">✨ 실제 기능 데모 콘솔</a></li>
+    <a class="logo-area" onclick="gotoTab('intro')">🚗 CarTax Pro</a>
+    <ul class="nav-menu">
+        <li><a id="tab-intro" class="active" onclick="gotoTab('intro')">서비스 소개</a></li>
+        <li><a id="tab-pricing" onclick="gotoTab('pricing')">요금 안내</a></li>
+        <li><a id="tab-demo" onclick="gotoTab('demo')">✨ 데모체험존</a></li>
     </ul>
-    <div class="nav-actions">
-        <button class="btn btn-outline" onclick="showSection('console')">로그인</button>
-        <button class="btn btn-primary" onclick="showSection('console')">무료 데모 체험</button>
+    <div class="nav-auth">
+        <button class="btn btn-text" onclick="gotoTab('login')">로그인</button>
+        <button class="btn btn-fill" onclick="gotoTab('register')">회사 등록</button>
     </div>
 </nav>
 
-<!-- 1. LANDING PAGE VIEW -->
-<div id="view-landing" class="page-view active">
-    <div class="hero">
-        <h1>업무용 승용차 관리 솔루션의 기준<br><span style="color:var(--primary);">카텍스 프로</span></h1>
-        <p>월결제와 연간 결제의 유연성부터 전사 지점·운행·지출 통합 통계까지 완벽한 관리를 실현하세요.</p>
-        <button class="btn btn-primary" style="padding:14px 32px; font-size:16px;" onclick="showSection('console')">실제 데모 프로그램 작동해보기 🚀</button>
-    </div>
-    
-    <div class="pricing-grid">
-        <div class="plan-card">
-            <h3>베이직</h3>
-            <p style="margin:12px 0; font-size:28px; font-weight:800;">19,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
-            <button class="btn btn-outline" style="width:100%;" onclick="showSection('console')">선택하기</button>
-        </div>
-        <div class="plan-card featured">
-            <h3>스탠다드</h3>
-            <p style="margin:12px 0; font-size:28px; font-weight:800; color:var(--primary);">49,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
-            <button class="btn btn-primary" style="width:100%;" onclick="showSection('console')">선택하기</button>
-        </div>
-        <div class="plan-card">
-            <h3>엔터프라이즈</h3>
-            <p style="margin:12px 0; font-size:28px; font-weight:800;">99,000원<span style="font-size:14px; font-weight:normal; color:#64748b;">/월</span></p>
-            <button class="btn btn-outline" style="width:100%;" onclick="showSection('console')">선택하기</button>
-        </div>
-    </div>
-</div>
+<div class="page-content">
 
-<!-- 2. LIVE CONSOLE VIEW (LANDING INCLUDED) -->
-<div id="view-console" class="page-view">
-    <div class="console-container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div>
-                <div class="sidebar-header-label">메인 관리</div>
-                <ul class="menu-list">
-                    <li class="menu-item active" id="mi-car" onclick="routeConsole('car')">🚘 차량</li>
-                    <li class="menu-item" id="mi-user" onclick="routeConsole('user')">👤 사용자</li>
-                    <li class="menu-item" id="mi-branch" onclick="routeConsole('branch')">🏢 지점</li>
-                </ul>
-            </div>
-            <div>
-                <div class="sidebar-header-label">운행 및 정산</div>
-                <ul class="menu-list">
-                    <li class="menu-item" id="mi-drive" onclick="routeConsole('drive')">📈 운행</li>
-                    <li class="menu-item" id="mi-expense" onclick="shiftPane('expense')">💳 지출</li>
-                    <li class="menu-item" id="mi-analysis" onclick="shiftPane('analysis')">📊 분석</li>
-                </ul>
-            </div>
-            <div>
-                <div class="sidebar-header-label">설정</div>
-                <ul class="menu-list">
-                    <li class="menu-item" id="mi-settings" onclick="shiftPane('settings')">⚙️ 시스템 설정</li>
-                </ul>
-            </div>
+    <!-- 1. 서비스 소개 -->
+    <div id="v-intro" class="view-section active" style="text-align:center; padding:8px 24px;">
+        <h1 style="font-size:40px; margin-top:60px; margin-bottom:20px;">업무차량 운행기록부 솔루션의 기준</h1>
+        <p style="color:var(--gray-text); font-size:18px; margin-bottom:40px;">월간/연간 유연 요금제 설계로 기업 인프라에 가장 알맞은 요금과 기능을 선택하세요.</p>
+        <button class="btn btn-fill" style="padding:12px 30px;" onclick="gotoTab('pricing')">요금제 및 연간할인 확인하기 🚀</button>
+    </div>
+
+    <!-- 2. 요금 안내 (월간/연간 스위치 탑재형) -->
+    <div id="v-pricing" class="view-section">
+        <div style="text-align:center; padding-top:40px;">
+            <h2>💡 정직하고 합리적인 요금 플랜</h2>
+            <p style="color:var(--gray-text); margin-top:8px;">연간 결제 시 15% 추가 할인 적용 혜택을 제공합니다.</p>
         </div>
 
-        <!-- Main Viewport content sections -->
-        <div class="main-viewport">
-            
-            <!-- PANELS FOR VEHICLES -->
-            <div id="pane-car" class="content-pane active">
-                <div class="pane-header">
-                    <div>
-                        <h2>🚘 차량 관리 센터</h2>
-                        <p>사내 보유 차량 등록 및 현황 관제를 조작할 수 있습니다.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModal('car')">+ 실제 새 차량 추가하기</button>
+        <!-- Toggle Switch Container -->
+        <div class="toggle-container">
+            <span id="label-monthly" class="toggle-label active">월간 결제</span>
+            <label class="switch">
+                <input type="checkbox" id="billingToggle" onchange="handleBillingCycleChange()">
+                <span class="slider"></span>
+            </label>
+            <span id="label-yearly" class="toggle-label">연간 결제 <span class="discount-badge">15% DC</span></span>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Tier 1 -->
+            <div class="price-card">
+                <div>
+                    <h3>베이직 플랜</h3>
+                    <p style="color:var(--gray-text); font-size:13px;">개인사업자 및 스타트업 전용</p>
+                    <div class="price-num" id="p1-display">19,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span></div>
+                </div>
+                <div>
+                    <ul class="perks-list">
+                        <li>법인 차량 최대 3대 등록 가능</li>
+                        <li>국세청 서식 다운로드 연 12회 제한</li>
+                        <li>임직원 초대 불가 (단독 계정 전용)</li>
+                    </ul>
+                    <button class="btn btn-dark" style="width:100%;" onclick="selectPlanSignUp('베이직')">베이직으로 시작</button>
+                </div>
+            </div>
+
+            <!-- Tier 2 -->
+            <div class="price-card featured">
+                <div>
+                    <h3>스탠다드 성장형</h3>
+                    <p style="color:var(--gray-text); font-size:13px;">가장 많은 기업이 채택하는 플랜</p>
+                    <div class="price-num" id="p2-display">49,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span></div>
+                </div>
+                <div>
+                    <ul class="perks-list">
+                        <li>법인 차량 등록 대수 무제한</li>
+                        <li>국세청 표준 양식 무제한 즉시 출력</li>
+                        <li>사내 부서 편제 및 임직원 초대 무제한</li>
+                    </ul>
+                    <button class="btn btn-fill" style="width:100%;" onclick="selectPlanSignUp('스탠다드')">스탠다드로 시작</button>
+                </div>
+            </div>
+
+            <!-- Tier 3 -->
+            <div class="price-card">
+                <div>
+                    <h3>프리미엄 엔터프라이즈</h3>
+                    <p style="color:var(--gray-text); font-size:13px;">중견/대기업 통합 관제 매니지먼트</p>
+                    <div class="price-num" id="p3-display">99,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span></div>
+                </div>
+                <div>
+                    <ul class="perks-list">
+                        <li>스탠다드 플랜의 모든 기능 포함</li>
+                        <li>사내 ERP 및 전사 시스템 API 실시간 연동</li>
+                        <li>전담 엔지니어 매핑 및 주행 이상 감지 통계</li>
+                    </ul>
+                    <button class="btn btn-dark" style="width:100%;" onclick="selectPlanSignUp('엔터프라이즈')">엔터프라이즈 신청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 가입 양식 (요금 플랜에 따른 기능 연계) -->
+    <div id="v-register" class="view-section">
+        <div class="form-box">
+            <h3 style="margin-bottom:15px; text-align:center;">🏢 기업 회원가입 및 요금 플랜 확정</h3>
+            <form id="billingRegForm">
+                <div class="input-item">
+                    <label>선택한 서비스 요금제 종류</label>
+                    <select id="reg_selected_plan" onchange="adjustFormByPlan()">
+                        <option value="베이직">베이직 플랜 (차량 3대 제한 / 임직원 초대 불가)</option>
+                        <option value="스탠다드" selected>스탠다드 성장형 (차량 무제한 / 임직원 초대 무제한)</option>
+                        <option value="엔터프라이즈">프리미엄 엔터프라이즈 (ERP API 및 기술 지원 포함)</option>
+                    </select>
+                </div>
+                <div class="input-item">
+                    <label>회사 법인명</label>
+                    <input type="text" id="reg_comp_name" required>
+                </div>
+                <div class="input-item">
+                    <label>사업자등록번호</label>
+                    <input type="text" id="reg_biz_no" placeholder="000-00-00000" required>
+                </div>
+                <div class="input-item" id="erp-api-group" style="display:none; background:#f0fdf4; padding:12px; border-radius:8px;">
+                    <label style="color:#16a34a;">🔒 엔터프라이즈 전용: 연동할 사내 ERP 종류</label>
+                    <input type="text" id="reg_erp_type" placeholder="예: SAP, 더존, 영림원 등">
+                </div>
+                <div class="input-item">
+                    <label>최고관리자 이메일</label>
+                    <input type="email" id="reg_email" required>
+                </div>
+                <button type="submit" class="btn btn-fill" style="width:100%; padding:12px;">가입 및 인프라 승인 요청</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. 데모 체험존 (요금제 선택에 따라 UI가 잠기거나 열리는 시뮬레이션 탑재) -->
+    <div id="v-demo" class="view-section">
+        <div style="text-align:center; padding:30px 24px 10px;">
+            <h2>🔮 요금제별 기능 제어 시뮬레이터</h2>
+            <p style="color:var(--gray-text); font-size:14px; margin-top:4px;">상단 셀렉트박스를 변경해보시면 요금제 정책에 따라 메뉴나 다운로드 제한 권한이 실시간 작동합니다.</p>
+        </div>
+        
+        <div style="max-width:1200px; margin: 0 auto 15px; padding:0 24px; display:flex; align-items:center; gap:10px;">
+            <strong style="font-size:14px;">현재 가상 가입 요금제 선택 등급:</strong>
+            <select id="demo-tier-selector" onchange="simulateDemoTierShift()" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+                <option value="베이직">베이직 라이선스 상태</option>
+                <option value="스탠다드" selected>스탠다드 라이선스 상태</option>
+                <option value="엔터프라이즈">엔터프라이즈 라이선스 상태</option>
+            </select>
+        </div>
+
+        <div class="workspace-box">
+            <div class="ws-sidebar">
+                <div style="margin-bottom:20px;"><span id="ws-plan-lbl" class="plan-badge-indicator">스탠다드 플랜</span></div>
+                <div style="font-size:11px; color:#64748b; margin-bottom:10px; font-weight:bold;">관제 메뉴</div>
+                <div style="padding:10px; background:rgba(255,255,255,0.05); border-radius:4px; font-size:14px; margin-bottom:6px;">📈 실시간 관제 센터</div>
+                <div style="padding:10px; font-size:14px; color:#94a3b8; margin-bottom:6px;">🚘 회사 승용차 관리</div>
+                
+                <!-- Lockable Dynamic Component Menu item for Enterprise -->
+                <div id="menu-erp-sync" style="padding:10px; font-size:14px; color:#ef4444; font-weight:bold; display:none;">🔄 ERP 실시간 동기화 모듈</div>
+            </div>
+            <div class="ws-main">
+                <div style="display:flex; justify-content:between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0;">🚗 전사 법인 차량 주행 통계</h3>
+                    <button class="btn btn-dark" id="btn-demo-xl" onclick="alert('엑셀 출력이 완료되었습니다.')">국세청 고시 양식 출력 (XL)</button>
                 </div>
                 
-                <div class="subtabs">
-                    <div class="subtab-btn active" id="st-list" onclick="routeSub('list')">차량 목록</div>
-                    <div class="subtab-btn" id="st-manage" onclick="routeSub('manage')">차량 관리</div>
-                    <div class="subtab-btn" id="st-reserve" onclick="routeSub('reserve')">차량 예약</div>
+                <!-- Dynamic notice box based on tier -->
+                <div id="tier-notice-zone" style="background:#eff6ff; padding:15px; border-radius:8px; font-size:14px; color:#1e40af; margin-bottom:20px; font-weight:500;">
+                    💡 스탠다드 회원 권한으로 차량 대수 제한 및 국세청 출력 제한 없이 프리미엄 이용 중입니다.
                 </div>
 
-                <div id="subpane-list" class="subpane active">
-                    <table class="data-table" id="car-table">
-                        <thead><tr><th>차량번호</th><th>모델명</th><th>구분</th><th>상태</th></tr></thead>
-                        <tbody>
-                            <tr><td>123가 4567</td><td>제네시스 G80</td><td>법인리스</td><td><span class="badge badge-ok">대기중</span></td></tr>
-                            <tr><td>98무 1122</td><td>그랜저 HG</td><td>법인자가</td><td><span class="badge badge-ok">운행중</span></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="subpane-manage" class="subpane">
-                    <table class="data-table">
-                        <thead><tr><th>차량번호</th><th>엔진오일</th><th>정비 필요 여부</th></tr></thead>
-                        <tbody><tr><td>123가 4567</td><td>정상 (80%)</td><td><span class="badge badge-ok">안전</span></td></tr></tbody>
-                    </table>
-                </div>
-
-                <div id="subpane-reserve" class="subpane">
-                    <table class="data-table">
-                        <thead><tr><th>예약 차량</th><th>예약자</th><th>기간</th></tr></thead>
-                        <tbody><tr><td>제네시스 G80</td><td>홍길동 대표</td><td>오전 09:00 ~ 12:00</td></tr></tbody>
-                    </table>
+                <div id="lockzone-enterprise-addon" class="locked-feature" style="display:block;">
+                    <span class="lock-tag">엔터프라이즈 전용 플랜 기능</span>
+                    🔒 사내 ERP 인사 정보 매핑 및 이상 주행 AI 통계 대시보드 기능이 잠겨 있습니다. 상단 Selector를 엔터프라이즈로 변경하시면 잠금이 해제됩니다.
                 </div>
             </div>
-
-            <!-- USER PANEL -->
-            <div id="pane-user" class="content-pane">
-                <div class="pane-header">
-                    <h2>👤 사용자 관리</h2>
-                    <button class="btn btn-primary" onclick="openModal('user')">+ 새 사용자 추가</button>
-                </div>
-                <table class="data-table" id="user-table">
-                    <thead><tr><th>이름</th><th>이메일</th><th>소속 부서</th></tr></thead>
-                    <tbody>
-                        <tr><td>홍길동</td><td>ceo@company.com</td><td>기획조정실</td></tr>
-                        <tr><td>김철수</td><td>cs@company.com</td><td>영업지점</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- BRANCH PANEL -->
-            <div id="pane-branch" class="content-pane">
-                <div class="pane-header">
-                    <h2>🏢 지점 관리</h2>
-                    <button class="btn btn-primary" onclick="openModal('branch')">+ 새 지점 추가</button>
-                </div>
-                <table class="data-table" id="branch-table">
-                    <thead><tr><th>지점명</th><th>배정 차량수</th><th>관할 인원</th></tr></thead>
-                    <tbody>
-                        <tr><td>서울 본사</td><td>8대</td><td>45명</td></tr>
-                        <tr><td>강남 영업지점</td><td>4대</td><td>22명</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- DRIVE PANEL -->
-            <div id="pane-drive" class="content-pane">
-                <div class="pane-header">
-                    <h2>📈 운행 관리 로그</h2>
-                    <button class="btn btn-primary" onclick="openModal('drive')">+ 실제 운행 기록 입력</button>
-                </div>
-                <table class="data-table" id="drive-table">
-                    <thead><tr><th>일자</th><th>차량</th><th>운전자</th><th>목적지</th><th>거리</th></tr></thead>
-                    <tbody>
-                        <tr><td>2026-05-21</td><td>123가 4567</td><td>홍길동</td><td>세종시 정부청사</td><td>120km</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- EXPENSE PANEL -->
-            <div id="pane-expense" class="content-pane">
-                <div class="pane-header">
-                    <h2>💳 지출 증빙 관리</h2>
-                </div>
-                <table class="data-table">
-                    <thead><tr><th>결제일</th><th>지출항목</th><th>금액</th><th>증빙</th></tr></thead>
-                    <tbody><tr><td>2026-05-20</td><td>주유비</td><td>85,000원</td><td>법인카드</td></tr></tbody>
-                </table>
-            </div>
-
-            <!-- ANALYSIS PANEL -->
-            <div id="pane-analysis" class="content-pane">
-                <div class="pane-header">
-                    <h2>📊 AI 운행 데이터 분석</h2>
-                </div>
-                <div style="background:white; padding:24px; border-radius:12px; border:1px solid var(--border);">
-                    <p style="font-weight:700; margin-bottom:12px;">당월 전사 업무 주행 기여 비율</p>
-                    <div style="height:20px; background:#e2e8f0; border-radius:10px; overflow:hidden;">
-                        <div style="width:85%; height:100%; background:var(--primary);"></div>
-                    </div>
-                    <p style="margin-top:8px; font-size:13px; color:#64748b;">총 주행 거리 중 업무용 공제 비율 85% 달성 중</p>
-                </div>
-            </div>
-
-            <!-- SETTINGS PANEL -->
-            <div id="pane-settings" class="content-pane">
-                <div class="pane-header">
-                    <h2>⚙️ 시스템 설정 센터</h2>
-                </div>
-                <div style="background:white; padding:24px; border-radius:12px; border:1px solid var(--border);">
-                    <label style="display:flex; align-items:center; gap:12px; font-weight:600;">
-                        <input type="checkbox" checked style="width:20px; height:20px;"> 공휴일/주말 운행 기록 작성 시 목적지 자동 필수화 강제
-                    </label>
-                </div>
-            </div>
-
         </div>
     </div>
-</div>
 
-<!-- DYNAMIC REAL REGISTRATION MODAL WINDOW -->
-<div class="modal" id="reg-modal">
-    <div class="modal-body">
-        <h3 id="modal-title" style="margin-bottom:20px;">새 항목 추가</h3>
-        <div id="modal-form-content"></div>
-        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
-            <button class="btn btn-outline" onclick="closeModal()">취소</button>
-            <button class="btn btn-primary" onclick="submitModalData()">실제 데이터 등록하기</button>
-        </div>
-    </div>
 </div>
 
 <script>
-    let currentModalType = '';
-
-    function showSection(sectionId) {
-        document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-        
-        document.getElementById('view-' + sectionId).classList.add('active');
-        const lnk = document.getElementById('nl-' + sectionId);
-        if(lnk) lnk.classList.add('active');
+    function gotoTab(tabId) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+        document.getElementById('v-' + tabId).classList.add('active');
+        const link = document.getElementById('tab-' + tabId);
+        if(link) link.classList.add('active');
+        window.scrollTo(0, 0);
     }
 
-    function routeConsole(paneId) {
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById('mi-' + paneId).classList.add('active');
+    // Toggle logic between Monthly and Yearly with identical Cartax calculations
+    function handleBillingCycleChange() {
+        const isYearly = document.getElementById('billingToggle').checked;
+        const monthlyLabel = document.getElementById('label-monthly');
+        const yearlyLabel = document.getElementById('label-yearly');
 
-        document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById('pane-' + paneId).classList.add('active');
-    }
-
-    function shiftPane(pId) {
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById('mi-' + pId).classList.add('active');
-
-        document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById('pane-' + pId).classList.add('active');
-    }
-
-    function routeSub(subId) {
-        document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('st-' + subId).classList.add('active');
-
-        document.querySelectorAll('.subpane').forEach(p => p.classList.remove('active'));
-        document.getElementById('subpane-' + subId).classList.add('active');
-    }
-
-    function openModal(type) {
-        currentModalType = type;
-        const container = document.getElementById('modal-form-content');
-        const title = document.getElementById('modal-title');
-        container.innerHTML = '';
-        
-        if(type === 'car') {
-            title.innerText = '🚘 실제 법인 차량 추가 등록';
-            container.innerHTML = `
-                <div class="form-group"><label>차량 번호</label><input type="text" id="fc_no" placeholder="예: 332가 9988"></div>
-                <div class="form-group"><label>차량 모델명</label><input type="text" id="fc_model" placeholder="예: 카니발 하이브리드"></div>
-                <div class="form-group"><label>소유 구분</label><select id="fc_type"><option>법인리스</option><option>법인자산</option></select></div>
-            `;
-        } else if(type === 'user') {
-            title.innerText = '👤 실제 임직원 추가 등록';
-            container.innerHTML = `
-                <div class="form-group"><label>임직원 성명</label><input type="text" id="fu_name" placeholder="예: 이몽룡 과장"></div>
-                <div class="form-group"><label>이메일</label><input type="email" id="fu_email" placeholder="user@company.com"></div>
-                <div class="form-group"><label>소속 부서</label><input type="text" id="fu_dept" placeholder="영업부"></div>
-            `;
-        } else if(type === 'branch') {
-            title.innerText = '🏢 신규 지점/사업장 추가';
-            container.innerHTML = `
-                <div class="form-group"><label>지점명</label><input type="text" id="fb_name" placeholder="예: 부산 물류센터"></div>
-                <div class="form-group"><label>초기 배정 차량 수</label><input type="text" id="fb_cars" value="1대"></div>
-            `;
-        } else if(type === 'drive') {
-            title.innerText = '📈 실제 운행 이력 수동 등록';
-            container.innerHTML = `
-                <div class="form-group"><label>운행 일자</label><input type="date" id="fd_date" value="2026-05-21"></div>
-                <div class="form-group"><label>차량 선택</label><input type="text" id="fd_car" value="123가 4567"></div>
-                <div class="form-group"><label>목적지</label><input type="text" id="fd_dest" placeholder="예: 거래처 미팅"></div>
-                <div class="form-group"><label>주행 거리</label><input type="text" id="fd_dist" placeholder="35km"></div>
-            `;
+        if(isYearly) {
+            monthlyLabel.classList.remove('active');
+            yearlyLabel.classList.add('active');
+            // 15% Discount calculations
+            document.getElementById('p1-display').innerHTML = `16,150원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월 (연간결제)</span>`;
+            document.getElementById('p2-display').innerHTML = `41,650원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월 (연간결제)</span>`;
+            document.getElementById('p3-display').innerHTML = `84,150원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월 (연간결제)</span>`;
+        } else {
+            monthlyLabel.add('active');
+            yearlyLabel.classList.remove('active');
+            document.getElementById('p1-display').innerHTML = `19,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span>`;
+            document.getElementById('p2-display').innerHTML = `49,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span>`;
+            document.getElementById('p3-display').innerHTML = `99,000원<span style="font-size:14px; font-weight:normal; color:var(--gray-text);">/월</span>`;
         }
-        document.getElementById('reg-modal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('reg-modal').style.display = 'none';
+    function selectPlanSignUp(planName) {
+        document.getElementById('reg_selected_plan').value = planName;
+        adjustFormByPlan();
+        gotoTab('register');
     }
 
-    function submitModalData() {
-        if(currentModalType === 'car') {
-            const no = document.getElementById('fc_no').value || '미입력';
-            const model = document.getElementById('fc_model').value || '미입력';
-            const type = document.getElementById('fc_type').value;
-            const table = document.getElementById('car-table').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            newRow.innerHTML = `<td>\${no}</td><td>\${model}</td><td>\${type}</td><td><span class="badge badge-ok">등록완료</span></td>`;
-        } else if(currentModalType === 'user') {
-            const name = document.getElementById('fu_name').value;
-            const email = document.getElementById('fu_email').value;
-            const dept = document.getElementById('fu_dept').value;
-            const table = document.getElementById('user-table').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            newRow.innerHTML = `<td>\${name}</td><td>\${email}</td><td>\${dept}</td>`;
-        } else if(currentModalType === 'branch') {
-            const name = document.getElementById('fb_name').value;
-            const cars = document.getElementById('fb_cars').value;
-            const table = document.getElementById('branch-table').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            newRow.innerHTML = `<td>\${name}</td><td>\${cars}</td><td>0명</td>`;
-        } else if(currentModalType === 'drive') {
-            const d = document.getElementById('fd_date').value;
-            const car = document.getElementById('fd_car').value;
-            const dest = document.getElementById('fd_dest').value;
-            const dist = document.getElementById('fd_dist').value;
-            const table = document.getElementById('drive-table').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            newRow.innerHTML = `<td>\${d}</td><td>\${car}</td><td>테스트 유저</td><td>\${dest}</td><td>\${dist}</td>`;
+    function adjustFormByPlan() {
+        const selectedPlan = document.getElementById('reg_selected_plan').value;
+        const erpGroup = document.getElementById('erp-api-group');
+        if(selectedPlan === '엔터프라이즈') {
+            erpGroup.style.display = 'block';
+        } else {
+            erpGroup.style.display = 'none';
         }
-        closeModal();
-        alert('데이터가 성공적으로 가상 데이터베이스에 추가 연동되었습니다!');
+    }
+
+    // Dynamic Mock Dashboard Sandbox controlling features based on tier selection
+    function simulateDemoTierShift() {
+        const tier = document.getElementById('demo-tier-selector').value;
+        const lbl = document.getElementById('ws-plan-lbl');
+        const notice = document.getElementById('tier-notice-zone');
+        const erpMenu = document.getElementById('menu-erp-sync');
+        const lockBox = document.getElementById('lockzone-enterprise-addon');
+        const xlBtn = document.getElementById('btn-demo-xl');
+
+        lbl.innerText = tier + " 플랜";
+
+        if(tier === '베이직') {
+            lbl.style.background = '#64748b';
+            notice.innerHTML = `⚠️ 베이직 등급 시뮬레이션: 보유 차량 최대 3대까지만 등록이 제한되며, 임직원 초대 및 링크 발급 메뉴가 비활성화됩니다.`;
+            notice.style.background = '#fffbeb';
+            notice.style.color = '#b45309';
+            erpMenu.style.display = 'none';
+            lockBox.style.display = 'block';
+        } else if(tier === '스탠다드') {
+            lbl.style.background = '#0052ff';
+            notice.innerHTML = `💡 스탠다드 회원 권한으로 차량 대수 제한 및 국세청 출력 제한 없이 프리미엄 이용 중입니다.`;
+            notice.style.background = '#eff6ff';
+            notice.style.color = '#1e40af';
+            erpMenu.style.display = 'none';
+            lockBox.style.display = 'block';
+        } else if(tier === '엔터프라이즈') {
+            lbl.style.background = '#111827';
+            notice.innerHTML = `🚀 최고등급 엔터프라이즈 라이선스가 활성화되었습니다. 모든 커스텀 사내 ERP API 연동 모듈 및 AI 운행 통계 부가 기능이 개방되었습니다.`;
+            notice.style.background = '#f0fdf4';
+            notice.style.color = '#16a34a';
+            erpMenu.style.display = 'block';
+            lockBox.style.display = 'none';
+        }
     }
 </script>
 </body>
