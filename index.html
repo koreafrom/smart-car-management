@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CarTax Pro - 통합 차량 인프라</title>
+    <title>CarTax Pro - 통합 차량 비용 관리 인프라</title>
     <link rel="stylesheet" href="./global.css">
 </head>
 <body>
@@ -14,10 +14,62 @@
     </ul>
     <div><a href="./car.html" class="btn-blue">무료 데모 시작</a></div>
 </nav>
-<div style="text-align:center; padding:120px 20px; max-width:900px; margin:70px auto 0;">
-    <h1 style="font-size:46px; font-weight:900; margin-bottom:20px; line-height:1.3;">추가·수정이 편한<br><span style="color:var(--primary);">분리형 멀티 페이지 인프라</span></h1>
-    <p style="font-size:18px; color:var(--text-muted); margin-bottom:40px;">각 기능이 파일별로 깔끔하게 독립되어 나중에 코드를 유지보수하고 관리하기가 편리합니다.</p>
+
+<!-- Hero Section -->
+<div style="text-align:center; padding:100px 20px 40px; max-width:900px; margin:70px auto 0;">
+    <h1 style="font-size:46px; font-weight:900; margin-bottom:20px; line-height:1.3;">국세청 증빙부터 차량 관제까지<br><span style="color:var(--primary);">가장 정확한 비즈니스 카 인프라</span></h1>
+    <p style="font-size:18px; color:var(--text-muted); margin-bottom:40px;">귀찮은 운행일지 작성을 100% 자동화하고, 전사 리스 및 자산 차량을 하나의 클라우드 관제 대시보드에서 효율적으로 통제하세요.</p>
     <a href="./car.html" class="btn-blue" style="padding:16px 36px; font-size:16px;">독립된 차량 관리 대시보드로 이동하기 🚀</a>
+</div>
+
+<!-- Pricing Section -->
+<div class="pricing-section">
+    <h2 style="text-align:center; font-size:28px; font-weight:800;">합리적이고 투명한 요금 플랜</h2>
+    <p style="text-align:center; color:var(--text-muted); margin-top:8px;">기업 규모와 인프라 니즈에 맞게 최적의 플랜을 선택하세요.</p>
+    
+    <div class="pricing-grid">
+        <!-- 스타터 -->
+        <div class="price-card">
+            <h3 style="font-size:18px; font-weight:800; margin-bottom:10px;">Starter</h3>
+            <p style="color:var(--text-muted); font-size:13px; min-height:36px;">소규모 팀 및 개인 사업자를 위한 기본 플랜</p>
+            <div style="margin:24px 0; font-size:32px; font-weight:900;">₩0 <span style="font-size:14px; font-weight:500; color:var(--text-muted);">/ 월</span></div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; font-size:13px; margin-bottom:30px; flex:1;">
+                <li>✓ 차량 최대 2대 등록 가능</li>
+                <li>✓ 국세청 서식 다운로드 수동 지원</li>
+                <li>✓ 기본적인 주행거리 기록장 제공</li>
+            </ul>
+            <a href="./car.html" class="btn-blue" style="background:#f1f5f9; color:#334155; text-align:center; justify-content:center;">무료 체험</a>
+        </div>
+        
+        <!-- 비즈니스 (Featured) -->
+        <div class="price-card featured">
+            <div class="badge">추천 플랜</div>
+            <h3 style="font-size:18px; font-weight:800; margin-bottom:10px; color:var(--primary);">Business Pro</h3>
+            <p style="color:var(--text-muted); font-size:13px; min-height:36px;">본격적인 다지점 차량 관제와 자동 증빙이 필요한 중소/중견기업</p>
+            <div style="margin:24px 0; font-size:32px; font-weight:900;">₩49,000 <span style="font-size:14px; font-weight:500; color:var(--text-muted);">/ 월</span></div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; font-size:13px; margin-bottom:30px; flex:1;">
+                <li>✓ **차량 등록 무제한**</li>
+                <li>✓ **실시간 슬라이드 드로어 관제 인터페이스**</li>
+                <li>✓ **예약 타임라인 간트차트 시스템**</li>
+                <li>✓ 국세청 고시 법정 서식 엑셀 원클릭 연동</li>
+            </ul>
+            <a href="./car.html" class="btn-blue" style="text-align:center; justify-content:center;">지금 연동하기</a>
+        </div>
+        
+        <!-- 엔터프라이즈 -->
+        <div class="price-card">
+            <h3 style="font-size:18px; font-weight:800; margin-bottom:10px;">Enterprise</h3>
+            <p style="color:var(--text-muted); font-size:13px; min-height:36px;">대규모 리스 플릿 운영 및 커스텀 API 하드웨어 연동 전용</p>
+            <div style="margin:24px 0; font-size:24px; font-weight:900; padding:6px 0;">별도 문의</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; font-size:13px; margin-bottom:30px; flex:1;">
+                <li>✓ 비즈니스 프로 플랜의 모든 기능</li>
+                <li>✓ 차량 OBD2 하드웨어 연동 및 GPS 추적 API</li>
+                <li>✓ 사내 ERP/더존 전용 원클릭 회계 전표 연동</li>
+                <li>✓ 24/7 전담 엔지니어 케어 및 SLA 보장</li>
+            </ul>
+            <a href="mailto:sales@cartax.pro" class="btn-blue" style="background:#0f172a; text-align:center; justify-content:center;">영업팀 문의</a>
+        </div>
+    </div>
 </div>
 </body>
 </html>

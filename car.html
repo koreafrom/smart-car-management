@@ -82,7 +82,7 @@
             <div class="timeline-scroll">
                 <div class="timeline-header">
                     <div class="time-cell" style="background:#f1f5f9;">차량명</div>
-                    <script>for(let i=7; i<=19; i++) document.write(`<div class="time-cell">\${i}:00</div>`);</script>
+                    <div class="time-cell">7:00</div><div class="time-cell">8:00</div><div class="time-cell">9:00</div><div class="time-cell">10:00</div><div class="time-cell">11:00</div><div class="time-cell">12:00</div><div class="time-cell">13:00</div><div class="time-cell">14:00</div><div class="time-cell">15:00</div><div class="time-cell">16:00</div><div class="time-cell">17:00</div><div class="time-cell">18:00</div><div class="time-cell">19:00</div>
                 </div>
                 <div class="timeline-row">
                     <div class="car-name-cell">제네시스 G80</div>
@@ -135,7 +135,7 @@
         const type = document.getElementById('reg_type').value;
         const tbody = document.getElementById('car-table-main').getElementsByTagName('tbody')[0];
         const row = tbody.insertRow(0);
-        row.innerHTML = `<td>\${no}</td><td>\${model}</td><td>\${type}</td><td><span style="color:green;font-weight:bold;">등록완료</span></td>`;
+        row.innerHTML = `<td>${no}</td><td>${model}</td><td>${type}</td><td><span style="color:green;font-weight:bold;">등록완료</span></td>`;
         alert('차량이 추가되었습니다.');
         closeDrawer();
     }
