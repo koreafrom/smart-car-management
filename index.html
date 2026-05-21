@@ -14,6 +14,7 @@
             --text-main: #334155;
             --border-color: #e2e8f0;
             --bg-light: #f8fafc;
+            --success: #16a34a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; letter-spacing: -0.02em; }
@@ -44,24 +45,35 @@
         .section-view { display: none; margin-top: 75px; }
         .section-view.active { display: block; }
 
-        /* Premium Landing Page Design (Recovered from V2/V3 Structure) */
-        .landing-hero { text-align: center; padding: 120px 24px 80px; max-width: 1000px; margin: 0 auto; }
+        /* Premium Landing Page Design */
+        .landing-hero { text-align: center; padding: 120px 24px 60px; max-width: 1000px; margin: 0 auto; }
         .landing-hero h1 { font-size: 52px; font-weight: 900; line-height: 1.25; color: #0f172a; margin-bottom: 24px; }
         .landing-hero p { font-size: 20px; color: #475569; margin-bottom: 40px; }
         
-        .feature-showcase { background: var(--bg-light); padding: 80px 40px; text-align: center; border-top: 1px solid var(--border-color); }
-        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1200px; margin: 40px auto 0; }
-        .feature-card { background: #ffffff; padding: 32px; border-radius: 16px; border: 1px solid var(--border-color); text-align: left; }
-        .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #0f172a; }
-        .feature-card p { font-size: 14px; color: #64748b; }
+        /* Pricing Switcher Toggle style */
+        .pricing-section { padding: 80px 40px; text-align: center; background: #ffffff; border-top: 1px solid var(--border-color); }
+        .pricing-toggle-container { display: inline-flex; background: #f1f5f9; padding: 4px; border-radius: 30px; margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .pt-btn { padding: 10px 24px; font-size: 15px; font-weight: 700; color: #64748b; border-radius: 24px; cursor: pointer; border: none; background: transparent; transition: all 0.2s; }
+        .pt-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 
-        /* Pricing Section */
-        .pricing-section { padding: 100px 40px; text-align: center; }
-        .pricing-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1200px; margin: 48px auto 0; }
-        .price-card { border: 1px solid var(--border-color); padding: 48px 32px; border-radius: 20px; text-align: left; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .pricing-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1200px; margin: 0 auto; }
+        .price-card { border: 1px solid var(--border-color); padding: 40px 28px; border-radius: 20px; text-align: left; display: flex; flex-direction: column; justify-content: space-between; position: relative; background: white; }
         .price-card.recommend { border: 2px solid var(--primary); box-shadow: 0 12px 40px rgba(0, 82, 255, 0.08); }
         .price-card.recommend .badge-top { position: absolute; top: -14px; left: 32px; background: var(--primary); color: white; padding: 4px 12px; font-size: 12px; font-weight: 700; border-radius: 20px; }
-        .price-card h2 { font-size: 36px; font-weight: 800; margin: 16px 0; }
+        .price-card h2 { font-size: 34px; font-weight: 800; margin: 16px 0; }
+        .price-card ul { list-style: none; margin-top: 24px; display: flex; flex-direction: column; gap: 12px; font-size: 14px; color: #475569; }
+        .price-card ul li::before { content: "✓ "; color: var(--primary); font-weight: bold; margin-right: 6px; }
+
+        /* Feature Matrix Table Section */
+        .matrix-section { max-width: 1200px; margin: 80px auto; padding: 0 24px; text-align: left; }
+        .matrix-section h3 { font-size: 24px; font-weight: 800; margin-bottom: 32px; text-align: center; }
+        .matrix-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; }
+        .matrix-table th { background: #f8fafc; padding: 18px; font-size: 15px; font-weight: 700; text-align: center; border-bottom: 2px solid var(--border-color); }
+        .matrix-table td { padding: 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+        .matrix-table tr:hover { background: #f8fafc; }
+        .feature-tag { font-weight: 700; color: #0f172a; }
+        .check-icon { color: var(--primary); font-weight: 900; text-align: center; }
+        .text-center { text-align: center; }
 
         /* Full Enterprise Console Grid Layout */
         .console-workspace { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 75px); }
@@ -105,7 +117,6 @@
         
         .status-badge { display: inline-flex; padding: 4px 10px; font-size: 12px; font-weight: 700; border-radius: 6px; }
         .badge-active { background: #dcfce7; color: #15803d; }
-        .badge-pending { background: #fef9c3; color: #a16207; }
 
         /* Interactive Modal Box */
         .interactive-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 3000; justify-content: center; align-items: center; }
@@ -114,7 +125,6 @@
         .input-item { margin-bottom: 18px; }
         .input-item label { display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px; }
         .input-item input, .input-item select { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border 0.2s; }
-        .input-item input:focus { border-color: var(--primary); }
 
         /* Odometer and Business Ratio Calculator styling for Analysis Section */
         .chart-panel { background: white; border-radius: 16px; border: 1px solid var(--border-color); padding: 32px; margin-top: 24px; }
@@ -129,7 +139,7 @@
     <a class="logo" onclick="toggleMainView('landing')">🚗 CarTax Pro</a>
     <ul class="nav-menu">
         <li><a id="nv-landing" class="active" onclick="toggleMainView('landing')">서비스 소개</a></li>
-        <li><a id="nv-pricing" onclick="toggleMainView('landing'); window.scrollTo({top: 1200, behavior: 'smooth'});">요금 안내</a></li>
+        <li><a id="nv-pricing" onclick="toggleMainView('landing'); window.scrollTo({top: 550, behavior: 'smooth'});">요금 안내</a></li>
         <li><a id="nv-console" onclick="toggleMainView('console')">✨ 실제 기능 데모존</a></li>
     </ul>
     <div class="nav-btns">
@@ -138,7 +148,7 @@
     </div>
 </nav>
 
-<!-- FRAME 1: SYSTEM LANDING PROPOSAL PAGE -->
+<!-- FRAME 1: SYSTEM LANDING PROPOSAL PAGE WITH SWITCHABLE PRICING TIERS -->
 <div id="view-landing" class="section-view active">
     <div class="landing-hero">
         <h1>임직원 운행일지부터 세무 절세까지<br><span style="color:var(--primary);">가장 확실한 법인 차량 인프라</span></h1>
@@ -146,53 +156,119 @@
         <button class="btn btn-primary" style="padding:16px 36px; font-size:16px;" onclick="toggleMainView('console')">지금 실제 데모 콘솔 구동해보기 🚀</button>
     </div>
 
-    <div class="feature-showcase">
-        <h2>전사 차량 비용 통합 관리 모듈 스펙</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h3>스마트폰 자동 GPS 트래킹</h3>
-                <p>수동 입력 없이 시동만 걸면 앱이 스스로 주행 거리와 Odometer 계기판 정보를 전산망으로 전송합니다.</p>
-            </div>
-            <div class="feature-card">
-                <h3>국세청 고시 제29호 완전 대응</h3>
-                <p>세무서 감사 시 단 1초 만에 법인 승용차 소명 양식을 다운로드하여 과세 처분 리스크를 제로화합니다.</p>
-            </div>
-            <div class="feature-card">
-                <h3>전사 지점·부서 멀티 계정</h3>
-                <p>사업장이 다원화된 중견·대기업을 위해 본사 및 각 지점별 자산 권한을 안전하게 완벽 분리합니다.</p>
-            </div>
-        </div>
-    </div>
-
+    <!-- Pricing Section with Month/Year Switcher Toggle -->
     <div class="pricing-section">
         <h2>정직하고 투명한 플랜 가이드</h2>
+        <p style="color:#64748b; margin-bottom:24px;">기업의 규모와 차량 대수에 맞춤형 솔루션을 제공합니다.</p>
+        
+        <div class="pricing-toggle-container">
+            <button class="pt-btn active" id="pb-month" onclick="changePricingTerm('month')">월간 결제</button>
+            <button class="pt-btn" id="pb-year" onclick="changePricingTerm('year')">연간 결제 (15% 즉시할인 🎁)</button>
+        </div>
+
         <div class="pricing-container">
             <div class="price-card">
                 <div>
-                    <h3>베이직 플랜</h3>
+                    <h3>라이트 (Lite)</h3>
                     <p style="color:#64748b; font-size:14px; margin-top:4px;">소규모 스타트업 및 개인사업자용</p>
-                    <h2>19,000원<span style="font-size:15px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <h2 id="p-lite">19,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <ul>
+                        <li>관리 차량 최대 5대 제한</li>
+                        <li>모바일 앱 기본 주행 기록</li>
+                        <li>수동 Odometer 계기판 관리</li>
+                    </ul>
                 </div>
                 <button class="btn btn-outline" style="width:100%; margin-top:24px;" onclick="toggleMainView('console')">이 플랜으로 데모 진입</button>
             </div>
             <div class="price-card recommend">
                 <div class="badge-top">가장 많은 기업이 선택</div>
                 <div>
-                    <h3>스탠다드 프로</h3>
+                    <h3>프로 (Pro)</h3>
                     <p style="color:#64748b; font-size:14px; margin-top:4px;">일반 중소·중견기업 통합 관제용</p>
-                    <h2 style="color:var(--primary);">49,000원<span style="font-size:15px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <h2 style="color:var(--primary);" id="p-pro">49,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <ul>
+                        <li><strong>관리 차량 대수 무제한</strong></li>
+                        <li><strong>국세청 고시 제29호 규격 출력</strong></li>
+                        <li>법인카드 지출 매핑 및 영수증 증빙</li>
+                        <li>실시간 차량 예약 현황판</li>
+                    </ul>
                 </div>
                 <button class="btn btn-primary" style="width:100%; margin-top:24px;" onclick="toggleMainView('console')">이 플랜으로 데모 진입</button>
             </div>
             <div class="price-card">
                 <div>
-                    <h3>엔터프라이즈 스위트</h3>
+                    <h3>비즈니스 (Business)</h3>
                     <p style="color:#64748b; font-size:14px; margin-top:4px;">다지점 사업장 및 계열사 전사 관리</p>
-                    <h2>99,000원<span style="font-size:15px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <h2 id="p-biz">99,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span></h2>
+                    <ul>
+                        <li>전사 다원화 지점/거점 편제 관리</li>
+                        <li>부서별 자산 및 운행 권한 분리</li>
+                        <li>AI 세무 리스크 분석 리포트</li>
+                        <li>ERP 전산망 API 연동 지원</li>
+                    </ul>
                 </div>
                 <button class="btn btn-outline" style="width:100%; margin-top:24px;" onclick="toggleMainView('console')">이 플랜으로 데모 진입</button>
             </div>
         </div>
+    </div>
+
+    <!-- Meticulous Feature Matrix Table (CarTax Style) -->
+    <div class="matrix-section">
+        <h3>기능 상세 비교 매트릭스</h3>
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>제공 기능 모듈</th>
+                    <th style="width:20%;">라이트 (Lite)</th>
+                    <th style="width:20%;">프로 (Pro)</th>
+                    <th style="width:20%;">비즈니스 (Business)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-tag">등록 가능 차량 대수</td>
+                    <td class="text-center">최대 5대</td>
+                    <td class="text-center" style="font-weight:700; color:var(--primary);">무제한</td>
+                    <td class="text-center" style="font-weight:700; color:var(--primary);">무제한</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">모바일 앱 자동 주행 기록 (GPS)</td>
+                    <td class="text-center check-icon">✓</td>
+                    <td class="text-center check-icon">✓</td>
+                    <td class="text-center check-icon">✓</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">국세청 고시 규격 운행기록부 출력</td>
+                    <td class="text-center" style="color:#cbd5e1;">수동 서식</td>
+                    <td class="text-center check-icon">✓ (원클릭)</td>
+                    <td class="text-center check-icon">✓ (원클릭)</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">Odometer 계기판 실시간 자동 계산</td>
+                    <td class="text-center" style="color:#cbd5e1;">X (수동 기록)</td>
+                    <td class="text-center check-icon">✓</td>
+                    <td class="text-center check-icon">✓</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">법인카드 비용 영수증 매핑 및 정산</td>
+                    <td class="text-center" style="color:#cbd5e1;">X</td>
+                    <td class="text-center check-icon">✓</td>
+                    <td class="text-center check-icon">✓</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">다원 사업장 / 지점 분리 편제</td>
+                    <td class="text-center" style="color:#cbd5e1;">X</td>
+                    <td class="text-center" style="color:#cbd5e1;">X</td>
+                    <td class="text-center check-icon">✓</td>
+                </tr>
+                <tr>
+                    <td class="feature-tag">AI 세무 리스크 통계 리포트</td>
+                    <td class="text-center" style="color:#cbd5e1;">X</td>
+                    <td class="text-center" style="color:#cbd5e1;">X</td>
+                    <td class="text-center check-icon">✓</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -334,7 +410,7 @@
                 </div>
             </div>
 
-            <!-- PANE 4: DRIVE LOGS WITH AUTOMATIC CALCULATIONS -->
+            <!-- PANE 4: DRIVE LOGS -->
             <div id="cpane-drive" class="pane-view">
                 <div class="header-action-row">
                     <div>
@@ -369,7 +445,7 @@
                 </div>
             </div>
 
-            <!-- PANE 6: ANALYSIS WITH LIVE PROGRESS GRAPHS -->
+            <!-- PANE 6: ANALYSIS -->
             <div id="cpane-analysis" class="pane-view">
                 <div class="header-action-row">
                     <h2>📊 AI 운행 세무 분석 리포트</h2>
@@ -401,13 +477,6 @@
                             <span style="color:#64748b; font-size:13px;">국세청 교차 조사 방지를 위해 비영업일 GPS 감지 시 모바일 푸시 알림으로 즉시 소명을 요구합니다.</span>
                         </div>
                     </label>
-                    <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; border-top:1px solid var(--border-color); padding-top:20px;">
-                        <input type="checkbox" checked style="width:22px; height:22px; margin-top:2px;">
-                        <div>
-                            <strong style="font-size:15px; display:block; color:#0f172a;">차량별 감가상각 한도액(연 800만원) 초과 알림 패널 켜기</strong>
-                            <span style="color:#64748b; font-size:13px;">결산 기말 전 비용 한도 조정을 위해 재무회계 부서에 리스크 경고 메일을 발송합니다.</span>
-                        </div>
-                    </label>
                 </div>
             </div>
 
@@ -431,7 +500,7 @@
     let activeModalScope = '';
     let globalCarCount = 2;
 
-    // View Routing between beautiful landing page and workspace simulator
+    // View Routing
     function toggleMainView(viewId) {
         document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
@@ -443,7 +512,23 @@
         window.scrollTo(0,0);
     }
 
-    // Left sidebar switching logic
+    // Interactive Term Pricing Toggle Switcher
+    function changePricingTerm(term) {
+        document.getElementById('pb-month').classList.remove('active');
+        document.getElementById('pb-year').classList.remove('active');
+        document.getElementById('pb-' + term).classList.add('active');
+
+        if(term === 'year') {
+            document.getElementById('p-lite').innerHTML = '16,150원<span style="font-size:13px; color:#16a34a; font-weight:700; margin-left:6px;">(연간형)</span>';
+            document.getElementById('p-pro').innerHTML = '41,650원<span style="font-size:13px; color:#16a34a; font-weight:700; margin-left:6px;">(연간형)</span>';
+            document.getElementById('p-biz').innerHTML = '84,150원<span style="font-size:13px; color:#16a34a; font-weight:700; margin-left:6px;">(연간형)</span>';
+        } else {
+            document.getElementById('p-lite').innerHTML = '19,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span>';
+            document.getElementById('p-pro').innerHTML = '49,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span>';
+            document.getElementById('p-biz').innerHTML = '99,000원<span style="font-size:14px; font-weight:normal; color:#64748b;"> /월</span>';
+        }
+    }
+
     function switchConsolePane(paneKey) {
         document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
         document.getElementById('sbl-' + paneKey).classList.add('active');
@@ -452,7 +537,6 @@
         document.getElementById('cpane-' + paneKey).classList.add('active');
     }
 
-    // Inside vehicle internal subtab switcher
     function switchSubPane(subKey) {
         document.querySelectorAll('.inner-tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('itb-' + subKey).classList.add('active');
@@ -461,7 +545,6 @@
         document.getElementById('subp-' + subKey).classList.add('active');
     }
 
-    // Fully Functional Modal Configurator
     function openDynamicModal(scope) {
         activeModalScope = scope;
         const title = document.getElementById('m-dialog-title');
@@ -473,7 +556,7 @@
             form.innerHTML = `
                 <div class="input-item"><label>차량 번호</label><input type="text" id="in_car_no" placeholder="예: 112가 8899" required></div>
                 <div class="input-item"><label>제조사 및 모델명</label><input type="text" id="in_car_model" placeholder="예: 카니발 하이브리드" required></div>
-                <div class="input-item"><label>구매 및 공급 분류</label><select id="in_car_type"><option>법인 리스</option><option>법인 자가</option><option>법인 장기렌트</option></select></div>
+                <div class="input-item"><label>구매 및 공급 분류</label><select id="in_car_type"><option>법인 리스</option><option>법인 자가</option></select></div>
                 <div class="input-item"><label>초기 주소지/차고지</label><input type="text" id="in_car_branch" value="서울 본사"></div>
             `;
         } else if(scope === 'user') {
@@ -486,7 +569,7 @@
         } else if(scope === 'branch') {
             title.innerText = '🏢 신규 거점/사업장 생성';
             form.innerHTML = `
-                <div class="input-item"><label>지점 코드</label><input type="text" id="in_br_code" value="BR-00${globalCarCount+1}"></div>
+                <div class="input-item"><label>지점 코드</label><input type="text" id="in_br_code" value="BR-003"></div>
                 <div class="input-item"><label>지점 명칭</label><input type="text" id="in_br_name" placeholder="예: 부산 해운대지점" required></div>
             `;
         } else if(scope === 'drive') {
@@ -494,15 +577,15 @@
             form.innerHTML = `
                 <div class="input-item"><label>선택 차량번호</label><input type="text" id="in_dr_car" value="123가 4567"></div>
                 <div class="input-item"><label>운전자 성명</label><input type="text" id="in_dr_name" value="김철수 팀장"></div>
-                <div class="input-item"><label>경로 (출발지 ➡️ 도착지)</label><input type="text" id="in_dr_path" placeholder="본사 ➡️ 인천 남동공단 거래처" required></div>
+                <div class="input-item"><label>경로 (출발지 ➡️ 도착지)</label><input type="text" id="in_dr_path" placeholder="본사 ➡️ 인천 거래처" required></div>
                 <div class="input-item"><label>실제 이동 주행거리 (km)</label><input type="number" id="in_dr_dist" placeholder="45" required></div>
-                <div class="input-item"><label>운행 목적 특성</label><select id="in_dr_purpose"><option>일반 업무용</option><option>고객 영업용</option><option>출퇴근용</option><option>비업무 개인용</option></select></div>
+                <div class="input-item"><label>운행 목적 특성</label><select id="in_dr_purpose"><option>일반 업무용</option><option>비업무 개인용</option></select></div>
             `;
         } else if(scope === 'expense') {
             title.innerText = '💳 법인카드 전산 지출 등록';
             form.innerHTML = `
                 <div class="input-item"><label>비용 발생 차량번호</label><input type="text" id="in_ex_car" value="123가 4567"></div>
-                <div class="input-item"><label>정산 항목</label><input type="text" id="in_ex_item" placeholder="예: 하이패스 통행료 / 주차비"></div>
+                <div class="input-item"><label>정산 항목</label><input type="text" id="in_ex_item" placeholder="예: 하이패스 통행료"></div>
                 <div class="input-item"><label>결제 영수 금액</label><input type="text" id="in_ex_price" placeholder="15,000 원"></div>
             `;
         }
@@ -514,18 +597,15 @@
         document.getElementById('master-dialog').style.display = 'none';
     }
 
-    // Dynamic Row Insertion logic that operates in real-time
     function executeDataInjection() {
         if(activeModalScope === 'car') {
             const no = document.getElementById('in_car_no').value || '333가 4444';
             const model = document.getElementById('in_car_model').value || 'K8 하이브리드';
             const type = document.getElementById('in_car_type').value;
             const branch = document.getElementById('in_car_branch').value;
-            
             const tbody = document.getElementById('table-car-body').getElementsByTagName('tbody')[0];
             const row = tbody.insertRow(0);
             row.innerHTML = `<td>\${no}</td><td>\${model}</td><td>\${type}</td><td>\${branch}</td><td><span class="status-badge badge-active">실시간 대기</span></td>`;
-            
             globalCarCount++;
             document.getElementById('cnt-total-car').innerText = globalCarCount + ' 대';
         } 
@@ -533,7 +613,6 @@
             const name = document.getElementById('in_user_name').value || '신규 직원';
             const email = document.getElementById('in_user_email').value || 'new@company.com';
             const dept = document.getElementById('in_user_dept').value || '개발본부';
-            
             const tbody = document.getElementById('table-user-body').getElementsByTagName('tbody')[0];
             const row = tbody.insertRow(0);
             row.innerHTML = `<td>\${name}</td><td>과장</td><td>\${email}</td><td>\${dept}</td><td><span class="status-badge badge-active">동기화 완료</span></td>`;
@@ -541,7 +620,6 @@
         else if(activeModalScope === 'branch') {
             const code = document.getElementById('in_br_code').value;
             const name = document.getElementById('in_br_name').value || '지점';
-            
             const tbody = document.getElementById('table-branch-body').getElementsByTagName('tbody')[0];
             const row = tbody.insertRow(0);
             row.innerHTML = `<td>\${code}</td><td>\${name}</td><td>0대</td><td>1명</td>`;
@@ -552,12 +630,10 @@
             const path = document.getElementById('in_dr_path').value || '출장지 이동';
             const dist = parseInt(document.getElementById('in_dr_dist').value) || 30;
             const purpose = document.getElementById('in_dr_purpose').value;
-            
             const tbody = document.getElementById('table-drive-body').getElementsByTagName('tbody')[0];
             const row = tbody.insertRow(0);
-            row.innerHTML = `<td>2026-05-21</td><td>\${car}</td><td>\${name}</td><td>\${path}</td><td>42,120 km</td><td>\${42120 + dist} km</td><td>\${dist} km</td><td>\${purpose}</td>`;
+            row.innerHTML = `<td>2026-05-21</td><td>\sign{\${car}}</td><td>\${name}</td><td>\${path}</td><td>42,120 km</td><td>\${42120 + dist} km</td><td>\${dist} km</td><td>\${purpose}</td>`;
             
-            // Adjust business ratio preview chart realistically
             if(purpose === '비업무 개인용') {
                 document.getElementById('live-analysis-bar').style.width = '78%';
                 document.getElementById('live-ratio-text').innerText = '78.4%';
@@ -572,12 +648,10 @@
             const car = document.getElementById('in_ex_car').value;
             const item = document.getElementById('in_ex_item').value || '통행료';
             const price = document.getElementById('in_ex_price').value || '5,000 원';
-            
             const tbody = document.getElementById('table-expense-body').getElementsByTagName('tbody')[0];
             const row = tbody.insertRow(0);
             row.innerHTML = `<td>2026-05-21 15:40</td><td>\${car}</td><td>\${item}</td><td>\${price}</td><td>법인 신용카드</td>`;
         }
-
         closeDynamicModal();
         alert('데이터 베이스 원장에 연동 기록이 반영되었습니다.');
     }
